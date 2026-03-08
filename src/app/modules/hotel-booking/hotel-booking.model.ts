@@ -21,6 +21,61 @@ const schema = new Schema<THotelBooking>(
             type: Number,
             default: 0,
         },
+        rooms_count: {
+            type: Number,
+            default: 1,
+        },
+        adults: {
+            type: Number,
+            default: 1,
+        },
+        children: {
+            type: Number,
+            default: 0,
+        },
+        with_pets: {
+            type: Boolean,
+            default: false,
+        },
+        first_name: {
+            type: String,
+            required: [true, 'first_name is required'],
+        },
+        last_name: {
+            type: String,
+            required: [true, 'last_name is required'],
+        },
+        email: {
+            type: String,
+            required: [true, 'email is required'],
+        },
+        phone: {
+            type: String,
+            required: [true, 'phone is required'],
+        },
+        country: {
+            type: String,
+            required: [true, 'country is required'],
+        },
+        arrival_time: {
+            type: String,
+            required: [true, 'arrival_time is required'],
+        },
+        special_requests: String,
+        smoking_preference: {
+            type: String,
+            enum: ['smoking', 'non-smoking'],
+        },
+        bed_preference: {
+            type: String,
+            enum: ['large', 'twin'],
+        },
+        room_details: [
+            {
+                room: { type: Schema.Types.ObjectId, ref: 'room' },
+                count: Number,
+            },
+        ],
         services: [
             {
                 type: Schema.Types.ObjectId,
@@ -36,6 +91,7 @@ const schema = new Schema<THotelBooking>(
             enum: {
                 values: ['pending', 'confirmed', 'cancelled', 'completed'],
             },
+            default: 'pending',
         },
         user: {
             type: Schema.Types.ObjectId,

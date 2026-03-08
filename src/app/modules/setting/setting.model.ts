@@ -39,7 +39,7 @@ const schema = new Schema<TSetting>(
         email_config: {
             default: {
                 type: String,
-                enum: ['gmail', 'sendgrid' , "brevo"],
+                enum: ['gmail', 'sendgrid', "brevo"],
                 default: 'sendgrid',
             },
             sendgrid: {
@@ -112,7 +112,12 @@ const schema = new Schema<TSetting>(
             default: undefined,
         },
         partner: {
-            type: [String],
+            type: [
+                {
+                    text: String,
+                    url: String,
+                },
+            ],
             default: undefined,
         },
     },

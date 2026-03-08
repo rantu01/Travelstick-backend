@@ -64,10 +64,25 @@ export class HotelController {
             (new Date(body.check_out).getTime() -
                 new Date(body.check_in).getTime()) /
             (1000 * 60 * 60 * 24);
-        const hotel_amount =
-            data.price.discount_type === 'flat'
-                ? data.price.amount - data.price.discount
-                : (data.price.amount * data.price.discount) / 100;
+        let room_amount = 0;
+        if (body?.room_details?.length) {
+            const { RoomService } = require('../room/room.service'); // Dynamic import to avoid circular dep if any
+            for (const item of body.room_details) {
+                const room = await RoomService.findRoomById(item.room);
+                const price =
+                    room.price.discount_type === 'flat'
+                        ? room.price.amount - room.price.discount
+                        : room.price.amount - (room.price.amount * room.price.discount) / 100;
+                room_amount += price * item.count;
+            }
+        } else {
+            room_amount =
+                data.price.discount_type === 'flat'
+                    ? data.price.amount - data.price.discount
+                    : data.price.amount - (data.price.amount * data.price.discount) / 100;
+            room_amount = room_amount * body.person;
+        }
+
         let service_charge: number = 0;
         if (body?.services) {
             // eslint-disable-next-line no-unsafe-optional-chaining
@@ -87,15 +102,15 @@ export class HotelController {
         if (hotel_booking.length) {
             throw new AppError(
                 httpStatus.BAD_REQUEST,
-                'Resuest Failed !',
-                'Hotel already booked for this period ! please change check in time name',
+                'Request Failed !',
+                'Hotel already booked for this period ! please change check in time',
             );
         }
         sendResponse(res, {
             statusCode: HttpStatusCode.Ok,
             success: true,
             message: 'Hotel booking calculation get successfully',
-            data: hotel_amount * body.person * duration + service_charge,
+            data: room_amount * duration + service_charge,
         });
     });
     static postHotelsBooking = catchAsync(async (req, res) => {
@@ -123,6 +138,20 @@ export class HotelController {
                     check_in: new Date(body.check_in),
                     check_out: new Date(body.check_out),
                     person: body.person,
+                    rooms_count: body.rooms_count,
+                    adults: body.adults,
+                    children: body.children,
+                    with_pets: body.with_pets,
+                    first_name: body.first_name,
+                    last_name: body.last_name,
+                    email: body.email,
+                    phone: body.phone,
+                    country: body.country,
+                    arrival_time: body.arrival_time,
+                    special_requests: body.special_requests,
+                    smoking_preference: body.smoking_preference,
+                    bed_preference: body.bed_preference,
+                    room_details: body.room_details,
                     services: body.services,
                     hotel: body.hotel,
                     amount: body.amount,
@@ -230,7 +259,7 @@ export class HotelController {
                         data.price.discount_type == 'flat'
                             ? data.price.amount - data.price.discount
                             : data.price.amount -
-                              (data.price.amount * data.price.discount) / 100,
+                            (data.price.amount * data.price.discount) / 100,
                     regular_price: data.price.amount,
                 },
             });
@@ -284,7 +313,22 @@ export class HotelController {
             ];
         }
         if (query.destination) {
-            filter['destination._id'] = new ObjectId(query.destination);
+            if (mongoose.Types.ObjectId.isValid(query.destination)) {
+                filter['destination._id'] = new ObjectId(query.destination);
+            } else {
+                // If it's a string name, search in destination names
+                filter['$or'] = filter['$or'] || [];
+                filter['$or'].push({
+                    [`destination.name.${langCode}`]: {
+                        $regex: new RegExp(query.destination.trim(), 'i'),
+                    },
+                });
+                filter['$or'].push({
+                    [`destination.address`]: {
+                        $regex: new RegExp(query.destination.trim(), 'i'),
+                    },
+                });
+            }
         }
 
         if (query.room_type) {
@@ -363,7 +407,7 @@ export class HotelController {
                         data.price.discount_type == 'flat'
                             ? data.price.amount - data.price.discount
                             : data.price.amount -
-                              (data.price.amount * data.price.discount) / 100,
+                            (data.price.amount * data.price.discount) / 100,
                     review: reviewList.docs,
                     review_calculation: !review_calculation
                         ? defaultRatingCalculate

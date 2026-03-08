@@ -124,7 +124,7 @@ const postSettingValidationSchema = z.object({
             .object(
                 {
                     default: z
-                        .enum(['gmail', 'sendgrid' , "brevo"], {
+                        .enum(['gmail', 'sendgrid', "brevo"], {
                             message: 'default must be gmail or sendgrid',
                         })
                         .optional(),
@@ -413,13 +413,19 @@ const postSettingValidationSchema = z.object({
             .optional(),
         partner: z
             .array(
-                z.string({
-                    invalid_type_error: 'partner must be a string',
-                    required_error: 'partner is required',
+                z.object({
+                    text: z.string({
+                        invalid_type_error: 'Partner name must be a string',
+                        required_error: 'Partner name is required',
+                    }),
+                    url: z.string({
+                        invalid_type_error: 'Partner image URL must be a string',
+                        required_error: 'Partner image is required',
+                    }),
                 }),
                 {
-                    message: 'Partner url must be array',
-                },
+                    message: 'Partner must be an array of objects containing name and image',
+                }
             )
             .optional(),
         gallery: z

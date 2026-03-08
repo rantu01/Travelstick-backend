@@ -75,5 +75,8 @@ export type TSetting = {
         },
     ];
     gallery: string[];
-    partner: string[];
+    partner: {
+        url: string;
+        text: string;
+    }[];
 };

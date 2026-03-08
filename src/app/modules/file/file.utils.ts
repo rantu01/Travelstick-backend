@@ -83,8 +83,8 @@ export const localUploadFile = async (file: any, folder: string) => {
     fs.writeFileSync(filePath, file.data);
     return Promise.resolve(
         setting.server_side_url +
-            '/' +
-            filePath.substring(filePath.indexOf('public')),
+        '/' +
+        filePath.substring(filePath.indexOf('public')).replace(/\\/g, '/'),
     );
 };
 export const localUploadFiles = async (files: any, folder: string) => {
@@ -118,7 +118,9 @@ export const localUploadFiles = async (files: any, folder: string) => {
             return (
                 setting.server_side_url +
                 '/' +
-                param.uploadDir.substring(param.uploadDir.indexOf('public'))
+                param.uploadDir
+                    .substring(param.uploadDir.indexOf('public'))
+                    .replace(/\\/g, '/')
             );
         }),
     );

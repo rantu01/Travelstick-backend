@@ -33,6 +33,7 @@ import { visaTypeRoutes } from '../modules/visa-type/visa-type.route';
 import { visaRoutes } from '../modules/visa/visa.route';
 import { visaInqueryRoutes } from '../modules/visa-inquery/visa-inquery.route';
 import { advertisementRouter } from '../modules/advertisement/advertisement.route';
+import { roomRoutes } from '../modules/room/room.route';
 
 const router = Router();
 
@@ -157,6 +158,10 @@ const moduleRouters = [
     {
         path: '/hotels',
         route: hotelRoutes,
+    },
+    {
+        path: '/rooms',
+        route: roomRoutes,
     },
     {
         path: '/settings',

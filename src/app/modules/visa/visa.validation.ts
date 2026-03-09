@@ -157,6 +157,20 @@ const postVisasValidationSchema = z.object({
                         'Document about must be less than or equal to  5000 characters',
                 }),
         ),
+        continent: z.record(languageEnum, z.string()).optional(),
+        capital: z.record(languageEnum, z.string()).optional(),
+        official_language: z.record(languageEnum, z.string()).optional(),
+        currency: z.record(languageEnum, z.string()).optional(),
+        local_time: z.record(languageEnum, z.string()).optional(),
+        exchange_rate: z.record(languageEnum, z.string()).optional(),
+        dialing_code: z.string().optional(),
+        weekend_days: z.record(languageEnum, z.string()).optional(),
+        population: z.record(languageEnum, z.string()).optional(),
+        area: z.record(languageEnum, z.string()).optional(),
+        education: z.record(languageEnum, z.string()).optional(),
+        religion: z.record(languageEnum, z.string()).optional(),
+        embassy_address: z.record(languageEnum, z.string()).optional(),
+        apply_fee: z.number().nonnegative().optional(),
 
         feathers: z.array(
             z.object({
@@ -382,6 +396,20 @@ const updateVisasValidationSchema = z.object({
                     }),
             )
             .optional(),
+        continent: z.record(languageEnum, z.string()).optional(),
+        capital: z.record(languageEnum, z.string()).optional(),
+        official_language: z.record(languageEnum, z.string()).optional(),
+        currency: z.record(languageEnum, z.string()).optional(),
+        local_time: z.record(languageEnum, z.string()).optional(),
+        exchange_rate: z.record(languageEnum, z.string()).optional(),
+        dialing_code: z.string().optional(),
+        weekend_days: z.record(languageEnum, z.string()).optional(),
+        population: z.record(languageEnum, z.string()).optional(),
+        area: z.record(languageEnum, z.string()).optional(),
+        education: z.record(languageEnum, z.string()).optional(),
+        religion: z.record(languageEnum, z.string()).optional(),
+        embassy_address: z.record(languageEnum, z.string()).optional(),
+        apply_fee: z.number().nonnegative().optional(),
 
         feathers: z
             .array(

@@ -163,6 +163,11 @@ const postHotelValidationSchema = z.object({
             .refine((data) => mongoose.Types.ObjectId.isValid(data), {
                 message: 'Destination is invalid',
             }),
+        mapLink: z
+            .string({
+                invalid_type_error: 'Map link must be string',
+            })
+            .optional(),
     }),
 });
 const postHotelBookingCalculationValidationSchema = z.object({
@@ -452,6 +457,11 @@ const updateHotelValidationSchema = z.object({
             })
             .refine((data) => mongoose.Types.ObjectId.isValid(data), {
                 message: 'Destination is invalid',
+            })
+            .optional(),
+        mapLink: z
+            .string({
+                invalid_type_error: 'Map link must be string',
             })
             .optional(),
         status: z

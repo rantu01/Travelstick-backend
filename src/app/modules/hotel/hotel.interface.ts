@@ -21,4 +21,5 @@ export type THotel = {
     exclude: Map<string, string>[];
     status: boolean;
     destination: Types.ObjectId;
+    mapLink?: string;
 };

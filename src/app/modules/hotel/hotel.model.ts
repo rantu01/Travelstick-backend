@@ -81,6 +81,10 @@ const schema = new Schema<THotel>(
             type: Schema.Types.ObjectId,
             ref: 'destination',
         },
+        mapLink: {
+            type: String,
+            default: undefined,
+        },
     },
     { timestamps: true },
 );

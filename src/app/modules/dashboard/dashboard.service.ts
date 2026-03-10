@@ -218,6 +218,55 @@ export class DashboardService {
                 },
             },
         ]);
+
+        // ✅ নতুন - visa citizen_of এর distinct values
+        const visa_citizen_of = await Visa.aggregate([
+            {
+                $match: {
+                    status: true,
+                    citizen_of: { $ne: null, $exists: true },
+                },
+            },
+            {
+                $group: {
+                    _id: '$citizen_of',
+                },
+            },
+            {
+                $project: {
+                    name: '$_id',
+                    _id: 0,
+                },
+            },
+            {
+                $sort: { name: 1 },
+            },
+        ]);
+
+        // ✅ নতুন - visa travelling_to এর distinct values
+        const visa_travelling_to = await Visa.aggregate([
+            {
+                $match: {
+                    status: true,
+                    travelling_to: { $ne: null, $exists: true },
+                },
+            },
+            {
+                $group: {
+                    _id: '$travelling_to',
+                },
+            },
+            {
+                $project: {
+                    name: '$_id',
+                    _id: 0,
+                },
+            },
+            {
+                $sort: { name: 1 },
+            },
+        ]);
+
         return [
             {
                 key: 'package_destination',
@@ -258,6 +307,15 @@ export class DashboardService {
             {
                 key: 'visa_validity',
                 values: visa_validity,
+            },
+            // ✅ নতুন দুটো key যোগ করা হয়েছে
+            {
+                key: 'visa_citizen_of',
+                values: visa_citizen_of,
+            },
+            {
+                key: 'visa_travelling_to',
+                values: visa_travelling_to,
             },
         ];
     }
@@ -448,11 +506,11 @@ export class DashboardService {
         const formattedPayment = paymentTypes.map((type) => ({
             name: type.charAt(0).toUpperCase() + type.slice(1),
             data: monthLabels.map((month) => {
-                const found = payment.find((item:any) => item._id.payment_type === type && item._id.month === month);
+                const found = payment.find((item: any) => item._id.payment_type === type && item._id.month === month);
                 return found ? found.totalAmount : 0;
             }),
         }));
-        aggrigate[0].payment = formattedPayment
+        aggrigate[0].payment = formattedPayment;
         aggrigate[0].destrination = destrination[0];
         return aggrigate[0];
     }
@@ -490,8 +548,8 @@ export class DashboardService {
                         {
                             $match: {
                                 user: user._id,
-                                status:{
-                                    $in:["accepted" , "completed" , "confirmed"]
+                                status: {
+                                    $in: ["accepted", "completed", "confirmed"],
                                 },
                             },
                         },

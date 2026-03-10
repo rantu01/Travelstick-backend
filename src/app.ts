@@ -15,6 +15,11 @@ app.use(cors({
     credentials: true
 }));
 
+// 2️⃣ Body size limit — middleware এর আগেই দিতে হবে ✅
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+
 // 2️⃣ Other middleware
 app.use(middleware);
 

@@ -99,6 +99,14 @@ export class VisaController {
         if (query.country) {
             filter['country'] = query.country;
         }
+        // ✅ citizen_of filter
+        if (query.citizen_of) {
+            filter['citizen_of'] = query.citizen_of;
+        }
+        // ✅ travelling_to filter
+        if (query.travelling_to) {
+            filter['travelling_to'] = query.travelling_to;
+        }
         if (query.validity) {
             filter['validity'] = query.validity;
         }
@@ -115,7 +123,7 @@ export class VisaController {
                         data.price.discount_type == 'flat'
                             ? data.price.amount - data.price.discount
                             : data.price.amount -
-                              (data.price.amount * data.price.discount) / 100,
+                            (data.price.amount * data.price.discount) / 100,
                 },
             });
         }

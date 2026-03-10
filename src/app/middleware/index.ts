@@ -22,13 +22,16 @@ const customHeader = (
     res.header('Access-Control-Allow-Methods', 'GET, PUT, DELETE, OPTIONS');
     next();
 };
+
 const customJson = (req: Request, res: Response, next: NextFunction): void => {
     if (req.originalUrl == '/api/v1/payments/stripe/webhook') {
         express.raw({ type: 'application/json' })(req, res, next);
     } else {
-        express.json()(req, res, next);
+        // ✅ 50mb limit যোগ করা হয়েছে
+        express.json({ limit: '50mb' })(req, res, next);
     }
 };
+
 const middleware = [
     morgan(config.node_env == 'dev' ? 'dev' : 'combined'),
     compression(),
@@ -41,7 +44,8 @@ const middleware = [
         crossOriginResourcePolicy: false,
     }),
     cookieParser(),
-    express.urlencoded({ extended: true }),
+    // ✅ 50mb limit যোগ করা হয়েছে
+    express.urlencoded({ limit: '50mb', extended: true }),
     customHeader,
     customJson,
     cors({ credentials: true }),

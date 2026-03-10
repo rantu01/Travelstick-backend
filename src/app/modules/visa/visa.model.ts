@@ -22,6 +22,8 @@ const schema = new Schema<TVisa>(
             type: Schema.Types.ObjectId,
             ref: 'visa_type',
         },
+        citizen_of: String,
+        travelling_to: String,
         language: String,
         validity: String,
         processing_type: String,

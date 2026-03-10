@@ -6,6 +6,8 @@ export type TVisa = {
     card_image: string;
     images: string[];
     visa_type: Types.ObjectId;
+    citizen_of: string;
+    travelling_to: string;
     language: string;
     validity: string;
     processing_type: string;
@@ -43,4 +45,3 @@ export type TVisa = {
     }[];
     status: boolean;
 };
-

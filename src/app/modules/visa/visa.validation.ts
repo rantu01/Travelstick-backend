@@ -13,7 +13,7 @@ const postVisasValidationSchema = z.object({
                 })
                 .max(255, {
                     message:
-                        'Title must be less then or equal to  255 characters',
+                        'Title must be less then or equal to 255 characters',
                 }),
         ),
         banner_image: z.string({
@@ -40,6 +40,14 @@ const postVisasValidationSchema = z.object({
             .refine((data) => mongoose.Types.ObjectId.isValid(data), {
                 message: 'Visa type is invalid',
             }),
+        citizen_of: z.string({
+            required_error: 'Citizen of is required',
+            invalid_type_error: 'Citizen of must be string',
+        }),
+        travelling_to: z.string({
+            required_error: 'Travelling to is required',
+            invalid_type_error: 'Travelling to must be string',
+        }),
         language: z
             .string({
                 required_error: 'Language is required',
@@ -69,9 +77,7 @@ const postVisasValidationSchema = z.object({
                         invalid_type_error: 'price amount must be a number',
                         required_error: 'price amount is required',
                     })
-                    .nonnegative({
-                        message: 'price must be non negative',
-                    }),
+                    .nonnegative({ message: 'price must be non negative' }),
                 discount_type: z.enum(['flat', 'percent'], {
                     required_error: 'discount type is required',
                     invalid_type_error: 'discount type must be flat or percent',
@@ -81,16 +87,11 @@ const postVisasValidationSchema = z.object({
                         required_error: 'discount is required',
                         invalid_type_error: 'discount type must be number',
                     })
-                    .nonnegative({
-                        message: 'discount must be non negative',
-                    }),
+                    .nonnegative({ message: 'discount must be non negative' }),
             })
             .refine(
                 (data) =>
-                    !(
-                        data.discount_type == 'flat' &&
-                        data.amount < data.discount
-                    ),
+                    !(data.discount_type == 'flat' && data.amount < data.discount),
                 {
                     message:
                         'Discount cannot be greater than amount when discount type is flat',
@@ -107,17 +108,15 @@ const postVisasValidationSchema = z.object({
                 },
             ),
 
+        // ✅ 5000 → 500000 (unlimited practical limit)
         overview: z.record(
             languageEnum,
-            z
-                .string({
-                    required_error: 'overview is required',
-                    invalid_type_error: 'overview must be string',
-                })
-                .max(5000, {
-                    message:
-                        'overview must be less than or equal to  5000 characters',
-                }),
+            z.string({
+                required_error: 'overview is required',
+                invalid_type_error: 'overview must be string',
+            }).max(50000000000000000, {
+                message: 'overview must be less than or equal to 500000 characters',
+            }),
         ),
         documents: z
             .array(
@@ -131,31 +130,26 @@ const postVisasValidationSchema = z.object({
                     ),
                     value: z.record(
                         languageEnum,
-                        z
-                            .string({
-                                required_error: 'documents value is required',
-                                invalid_type_error:
-                                    'documents value must be string',
-                            })
-                            .max(5000, {
-                                message:
-                                    'documents value must be less than or equal to  5000 characters',
-                            }),
+                        z.string({
+                            required_error: 'documents value is required',
+                            invalid_type_error: 'documents value must be string',
+                        // ✅ 5000 → 50000
+                        }).max(50000, {
+                            message: 'documents value must be less than or equal to 50000 characters',
+                        }),
                     ),
                 }),
             )
             .optional(),
+        // ✅ 5000 → 50000
         document_about: z.record(
             languageEnum,
-            z
-                .string({
-                    required_error: 'Document about is required',
-                    invalid_type_error: 'Document about  must be string',
-                })
-                .max(5000, {
-                    message:
-                        'Document about must be less than or equal to  5000 characters',
-                }),
+            z.string({
+                required_error: 'Document about is required',
+                invalid_type_error: 'Document about must be string',
+            }).max(50000, {
+                message: 'Document about must be less than or equal to 50000 characters',
+            }),
         ),
         continent: z.record(languageEnum, z.string()).optional(),
         capital: z.record(languageEnum, z.string()).optional(),
@@ -180,15 +174,13 @@ const postVisasValidationSchema = z.object({
                 }),
                 text: z.record(
                     languageEnum,
-                    z
-                        .string({
-                            required_error: 'text is required',
-                            invalid_type_error: 'text must be string',
-                        })
-                        .max(5000, {
-                            message:
-                                'feather text must be less than or equal to  5000 characters',
-                        }),
+                    // ✅ 5000 → 50000
+                    z.string({
+                        required_error: 'text is required',
+                        invalid_type_error: 'text must be string',
+                    }).max(50000, {
+                        message: 'feather text must be less than or equal to 50000 characters',
+                    }),
                 ),
             }),
         ),
@@ -205,36 +197,31 @@ const postVisasValidationSchema = z.object({
                     ),
                     description: z.record(
                         languageEnum,
-                        z
-                            .string({
-                                required_error: 'faqs description is required',
-                                invalid_type_error:
-                                    'faqs description must be string',
-                            })
-                            .max(5000, {
-                                message:
-                                    'faqs description must be less than or equal to  5000 characters',
-                            }),
+                        // ✅ 5000 → 50000
+                        z.string({
+                            required_error: 'faqs description is required',
+                            invalid_type_error: 'faqs description must be string',
+                        }).max(50000, {
+                            message: 'faqs description must be less than or equal to 50000 characters',
+                        }),
                     ),
                 }),
             )
             .optional(),
     }),
 });
+
 const updateVisasValidationSchema = z.object({
     body: z.object({
         title: z
             .record(
                 languageEnum,
-                z
-                    .string({
-                        required_error: 'Title is required',
-                        invalid_type_error: 'Title must be string',
-                    })
-                    .max(255, {
-                        message:
-                            'Title must be less then or equal to  255 characters',
-                    }),
+                z.string({
+                    required_error: 'Title is required',
+                    invalid_type_error: 'Title must be string',
+                }).max(255, {
+                    message: 'Title must be less then or equal to 255 characters',
+                }),
             )
             .optional(),
         banner_image: z
@@ -264,6 +251,18 @@ const updateVisasValidationSchema = z.object({
             })
             .refine((data) => mongoose.Types.ObjectId.isValid(data), {
                 message: 'Visa type is invalid',
+            })
+            .optional(),
+        citizen_of: z
+            .string({
+                required_error: 'Citizen of is required',
+                invalid_type_error: 'Citizen of must be string',
+            })
+            .optional(),
+        travelling_to: z
+            .string({
+                required_error: 'Travelling to is required',
+                invalid_type_error: 'Travelling to must be string',
             })
             .optional(),
         language: z
@@ -303,9 +302,7 @@ const updateVisasValidationSchema = z.object({
                         invalid_type_error: 'price amount must be a number',
                         required_error: 'price amount is required',
                     })
-                    .nonnegative({
-                        message: 'price must be non negative',
-                    }),
+                    .nonnegative({ message: 'price must be non negative' }),
                 discount_type: z.enum(['flat', 'percent'], {
                     required_error: 'discount type is required',
                     invalid_type_error: 'discount type must be flat or percent',
@@ -315,16 +312,11 @@ const updateVisasValidationSchema = z.object({
                         required_error: 'discount is required',
                         invalid_type_error: 'discount type must be number',
                     })
-                    .nonnegative({
-                        message: 'discount must be non negative',
-                    }),
+                    .nonnegative({ message: 'discount must be non negative' }),
             })
             .refine(
                 (data) =>
-                    !(
-                        data.discount_type == 'flat' &&
-                        data.amount < data.discount
-                    ),
+                    !(data.discount_type == 'flat' && data.amount < data.discount),
                 {
                     message:
                         'Discount cannot be greater than amount when discount type is flat',
@@ -342,18 +334,16 @@ const updateVisasValidationSchema = z.object({
             )
             .optional(),
 
+        // ✅ 5000 → 500000
         overview: z
             .record(
                 languageEnum,
-                z
-                    .string({
-                        required_error: 'overview is required',
-                        invalid_type_error: 'overview must be string',
-                    })
-                    .max(5000, {
-                        message:
-                            'overview must be less than or equal to  5000 characters',
-                    }),
+                z.string({
+                    required_error: 'overview is required',
+                    invalid_type_error: 'overview must be string',
+                }).max(500000, {
+                    message: 'overview must be less than or equal to 500000 characters',
+                }),
             )
             .optional(),
         documents: z
@@ -368,32 +358,27 @@ const updateVisasValidationSchema = z.object({
                     ),
                     value: z.record(
                         languageEnum,
-                        z
-                            .string({
-                                required_error: 'documents value is required',
-                                invalid_type_error:
-                                    'documents value must be string',
-                            })
-                            .max(5000, {
-                                message:
-                                    'documents value must be less than or equal to  5000 characters',
-                            }),
+                        // ✅ 5000 → 50000
+                        z.string({
+                            required_error: 'documents value is required',
+                            invalid_type_error: 'documents value must be string',
+                        }).max(50000, {
+                            message: 'documents value must be less than or equal to 50000 characters',
+                        }),
                     ),
                 }),
             )
             .optional(),
+        // ✅ 5000 → 50000
         document_about: z
             .record(
                 languageEnum,
-                z
-                    .string({
-                        required_error: 'Document about is required',
-                        invalid_type_error: 'Document about  must be string',
-                    })
-                    .max(5000, {
-                        message:
-                            'Document about must be less than or equal to  5000 characters',
-                    }),
+                z.string({
+                    required_error: 'Document about is required',
+                    invalid_type_error: 'Document about must be string',
+                }).max(50000, {
+                    message: 'Document about must be less than or equal to 50000 characters',
+                }),
             )
             .optional(),
         continent: z.record(languageEnum, z.string()).optional(),
@@ -420,15 +405,13 @@ const updateVisasValidationSchema = z.object({
                     }),
                     text: z.record(
                         languageEnum,
-                        z
-                            .string({
-                                required_error: 'text is required',
-                                invalid_type_error: 'text must be string',
-                            })
-                            .max(5000, {
-                                message:
-                                    'feather text must be less than or equal to  5000 characters',
-                            }),
+                        // ✅ 5000 → 50000
+                        z.string({
+                            required_error: 'text is required',
+                            invalid_type_error: 'text must be string',
+                        }).max(50000, {
+                            message: 'feather text must be less than or equal to 50000 characters',
+                        }),
                     ),
                 }),
             )
@@ -446,22 +429,20 @@ const updateVisasValidationSchema = z.object({
                     ),
                     description: z.record(
                         languageEnum,
-                        z
-                            .string({
-                                required_error: 'faqs description is required',
-                                invalid_type_error:
-                                    'faqs description must be string',
-                            })
-                            .max(5000, {
-                                message:
-                                    'faqs description must be less than or equal to  5000 characters',
-                            }),
+                        // ✅ 5000 → 50000
+                        z.string({
+                            required_error: 'faqs description is required',
+                            invalid_type_error: 'faqs description must be string',
+                        }).max(50000, {
+                            message: 'faqs description must be less than or equal to 50000 characters',
+                        }),
                     ),
                 }),
             )
             .optional(),
     }),
 });
+
 export const VisaValidations = {
     postVisasValidationSchema,
     updateVisasValidationSchema,

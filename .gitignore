@@ -7,4 +7,5 @@ dist
 logs
 .env.dev
 .env.prod
-.envsrc/app/utils/firebase-service.json
+.env
+src/app/utils/firebase-service.json

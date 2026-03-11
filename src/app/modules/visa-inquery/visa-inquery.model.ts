@@ -15,6 +15,28 @@ const schema = new Schema<TVisaInquery>(
         },
         message: String,
         file: String,
+        visa: {
+            type: Schema.Types.ObjectId,
+            ref: 'visa',
+        },
+        appointment_date: Date,
+        number_of_applicants: {
+            type: Number,
+            default: 1,
+        },
+        price_per_person: {
+            type: Number,
+            default: 0,
+        },
+        total_price: {
+            type: Number,
+            default: 0,
+        },
+        inquiry_type: {
+            type: String,
+            enum: ['inquiry', 'apply'],
+            default: 'inquiry',
+        },
     },
     { timestamps: true },
 );

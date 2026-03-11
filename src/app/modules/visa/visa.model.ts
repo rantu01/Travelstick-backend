@@ -144,6 +144,16 @@ const schema = new Schema<TVisa>(
             type: Boolean,
             default: true,
         },
+        visa_code: { type: String },
+        max_stay_days: { type: Number },
+        entry_type: {
+            type: String,
+            enum: {
+                values: ['single', 'double', 'multiple'],
+                message: '{VALUE} is not valid entry type',
+            },
+        },
+        visa_category: { type: String },
     },
     { timestamps: true },
 );

@@ -46,6 +46,24 @@ const postVisaInqueryValidationSchema = z.object({
     }),
 });
 
+
+const postVisaApplyValidationSchema = z.object({
+    body: z.object({
+        full_name: z.string().min(1).max(255).trim(),
+        email: z.string().email(),
+        phone: z.string(),
+        visa: z.string().refine((d) => mongoose.Types.ObjectId.isValid(d), {
+            message: 'visa must be valid objectID',
+        }),
+        appointment_date: z.string(),
+        number_of_applicants: z.number().positive(),
+        price_per_person: z.number().nonnegative(),
+        total_price: z.number().nonnegative(),
+        inquiry_type: z.literal('apply'),
+    }),
+});
+
 export const VisaInqueryValidations = {
     postVisaInqueryValidationSchema,
+    postVisaApplyValidationSchema,
 };

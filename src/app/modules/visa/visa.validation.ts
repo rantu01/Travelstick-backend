@@ -65,11 +65,11 @@ const postVisasValidationSchema = z.object({
         visa_mode: z.string({
             required_error: 'Visa mode is required',
             invalid_type_error: 'Visa mode must be string',
-        }),
+        }).optional(),
         country: z.string({
             required_error: 'Country is required',
             invalid_type_error: 'Country must be string',
-        }),
+        }).optional(),
         price: z
             .object({
                 amount: z
@@ -78,35 +78,19 @@ const postVisasValidationSchema = z.object({
                         required_error: 'price amount is required',
                     })
                     .nonnegative({ message: 'price must be non negative' }),
-                discount_type: z.enum(['flat', 'percent'], {
-                    required_error: 'discount type is required',
-                    invalid_type_error: 'discount type must be flat or percent',
-                }),
+                discount_type: z
+                    .enum(['flat', 'percent'], {
+                        invalid_type_error: 'discount type must be flat or percent',
+                    })
+                    .optional(),
                 discount: z
                     .number({
-                        required_error: 'discount is required',
-                        invalid_type_error: 'discount type must be number',
+                        invalid_type_error: 'discount must be number',
                     })
-                    .nonnegative({ message: 'discount must be non negative' }),
+                    .nonnegative({ message: 'discount must be non negative' })
+                    .optional(),
             })
-            .refine(
-                (data) =>
-                    !(data.discount_type == 'flat' && data.amount < data.discount),
-                {
-                    message:
-                        'Discount cannot be greater than amount when discount type is flat',
-                    path: ['discount'],
-                },
-            )
-            .refine(
-                (data) =>
-                    !(data.discount_type == 'percent' && 100 < data.discount),
-                {
-                    message:
-                        'Discount cannot be greater than 100 when discount type is percent',
-                    path: ['discount'],
-                },
-            ),
+            .optional(),
 
         // ✅ 5000 → 500000 (unlimited practical limit)
         overview: z.record(
@@ -133,7 +117,7 @@ const postVisasValidationSchema = z.object({
                         z.string({
                             required_error: 'documents value is required',
                             invalid_type_error: 'documents value must be string',
-                        // ✅ 5000 → 50000
+                            // ✅ 5000 → 50000
                         }).max(50000, {
                             message: 'documents value must be less than or equal to 50000 characters',
                         }),
@@ -208,6 +192,11 @@ const postVisasValidationSchema = z.object({
                 }),
             )
             .optional(),
+
+        visa_code: z.string().optional(),
+        max_stay_days: z.number().nonnegative().optional(),
+        entry_type: z.enum(['single', 'double', 'multiple']).optional(),
+        visa_category: z.string().optional(),
     }),
 });
 
@@ -303,35 +292,18 @@ const updateVisasValidationSchema = z.object({
                         required_error: 'price amount is required',
                     })
                     .nonnegative({ message: 'price must be non negative' }),
-                discount_type: z.enum(['flat', 'percent'], {
-                    required_error: 'discount type is required',
-                    invalid_type_error: 'discount type must be flat or percent',
-                }),
+                discount_type: z
+                    .enum(['flat', 'percent'], {
+                        invalid_type_error: 'discount type must be flat or percent',
+                    })
+                    .optional(),
                 discount: z
                     .number({
-                        required_error: 'discount is required',
-                        invalid_type_error: 'discount type must be number',
+                        invalid_type_error: 'discount must be number',
                     })
-                    .nonnegative({ message: 'discount must be non negative' }),
+                    .nonnegative({ message: 'discount must be non negative' })
+                    .optional(),
             })
-            .refine(
-                (data) =>
-                    !(data.discount_type == 'flat' && data.amount < data.discount),
-                {
-                    message:
-                        'Discount cannot be greater than amount when discount type is flat',
-                    path: ['discount'],
-                },
-            )
-            .refine(
-                (data) =>
-                    !(data.discount_type == 'percent' && 100 < data.discount),
-                {
-                    message:
-                        'Discount cannot be greater than 100 when discount type is percent',
-                    path: ['discount'],
-                },
-            )
             .optional(),
 
         // ✅ 5000 → 500000
@@ -440,6 +412,10 @@ const updateVisasValidationSchema = z.object({
                 }),
             )
             .optional(),
+        visa_code: z.string().optional(),
+        max_stay_days: z.number().nonnegative().optional(),
+        entry_type: z.enum(['single', 'double', 'multiple']).optional(),
+        visa_category: z.string().optional(),
     }),
 });
 

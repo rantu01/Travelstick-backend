@@ -24,4 +24,11 @@ router.delete(
     employeePermission('visa_delete'),
     VisaInqueryController.deleteVisaTypes,
 );
+
+router.post(
+    '/apply',
+    validate(VisaInqueryValidations.postVisaApplyValidationSchema),
+    VisaInqueryController.postVisaApply,
+);
+
 export const visaInqueryRoutes: Router = router;

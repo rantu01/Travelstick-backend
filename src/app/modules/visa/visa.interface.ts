@@ -44,4 +44,8 @@ export type TVisa = {
         description: Map<string, string>;
     }[];
     status: boolean;
+    visa_code: string;
+    max_stay_days: number;
+    entry_type: 'single' | 'double' | 'multiple';
+    visa_category: string;
 };

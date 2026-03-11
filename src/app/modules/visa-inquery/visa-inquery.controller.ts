@@ -19,20 +19,17 @@ export class VisaInqueryController {
         const { query }: any = req;
         const { user } = res.locals;
         const filter: any = {};
+
         if (user.role == 'user') {
             filter['email'] = user.email;
         }
-        // if (query.search) {
-        //     filter[`$or`] = [
-        //         { full_name: { $regex: new RegExp(query.search, 'i') } },
-        //         { email: { $regex: new RegExp(query.search, 'i') } },
 
-        //     ];
-        // }
+        if (query.inquiry_type) {
+            filter['inquiry_type'] = query.inquiry_type;
+        }
+
         if (query._id) {
-            const data = await VisaInqueryService.findVisaInqueryById(
-                query._id,
-            );
+            const data = await VisaInqueryService.findVisaInqueryById(query._id);
             sendResponse(res, {
                 statusCode: HttpStatusCode.Ok,
                 success: true,
@@ -40,6 +37,7 @@ export class VisaInqueryController {
                 data,
             });
         }
+
         const select = {
             updatedAt: 0,
             __v: 0,
@@ -66,6 +64,19 @@ export class VisaInqueryController {
             statusCode: HttpStatusCode.Ok,
             success: true,
             message: 'Visa inquery deleted successfully',
+            data: undefined,
+        });
+    });
+    static postVisaApply = catchAsync(async (req, res) => {
+        const { body } = req.body;
+        await VisaInqueryService.createVisaInquery({
+            ...body,
+            inquiry_type: 'apply',
+        });
+        sendResponse(res, {
+            statusCode: HttpStatusCode.Created,
+            success: true,
+            message: 'Visa application submitted successfully',
             data: undefined,
         });
     });

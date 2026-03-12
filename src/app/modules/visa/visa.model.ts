@@ -24,7 +24,6 @@ const schema = new Schema<TVisa>(
         },
         citizen_of: String,
         travelling_to: String,
-        language: String,
         validity: String,
         processing_type: String,
         visa_mode: String,
@@ -65,59 +64,6 @@ const schema = new Schema<TVisa>(
         document_about: {
             type: Schema.Types.Map,
             of: String,
-        },
-        continent: {
-            type: Schema.Types.Map,
-            of: String,
-        },
-        capital: {
-            type: Schema.Types.Map,
-            of: String,
-        },
-        official_language: {
-            type: Schema.Types.Map,
-            of: String,
-        },
-        currency: {
-            type: Schema.Types.Map,
-            of: String,
-        },
-        local_time: {
-            type: Schema.Types.Map,
-            of: String,
-        },
-        exchange_rate: {
-            type: Schema.Types.Map,
-            of: String,
-        },
-        dialing_code: String,
-        weekend_days: {
-            type: Schema.Types.Map,
-            of: String,
-        },
-        population: {
-            type: Schema.Types.Map,
-            of: String,
-        },
-        area: {
-            type: Schema.Types.Map,
-            of: String,
-        },
-        education: {
-            type: Schema.Types.Map,
-            of: String,
-        },
-        religion: {
-            type: Schema.Types.Map,
-            of: String,
-        },
-        embassy_address: {
-            type: Schema.Types.Map,
-            of: String,
-        },
-        apply_fee: {
-            type: Number,
-            default: 0,
         },
         feathers: [
             {

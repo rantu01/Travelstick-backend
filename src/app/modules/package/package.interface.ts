@@ -17,11 +17,18 @@ export type TPackage = {
     check_in: Date;
     group_size: number;
     tour_type: string;
+    start_location: string;
+    end_location: string;
+    difficulty_level: 'easy' | 'moderate' | 'hard';
+    transport_type: string;
+    min_age: number;
+    accommodation_type: string;
+    meals_included: string;
     about: Map<string, string>;
     activities: Types.ObjectId[];
     highlight: Map<string, string>[];
-    include: Map<string, string>[];
-    exclude: Map<string, string>[];
+    includes: Map<string, string>[];
+    excludes: Map<string, string>[];
     feathers: {
         logo: string;
         text: Map<string, string>;

@@ -48,12 +48,6 @@ const postVisasValidationSchema = z.object({
             required_error: 'Travelling to is required',
             invalid_type_error: 'Travelling to must be string',
         }),
-        language: z
-            .string({
-                required_error: 'Language is required',
-                invalid_type_error: 'Language must be string',
-            })
-            .optional(),
         validity: z.string({
             required_error: 'validity is required',
             invalid_type_error: 'validity must be string',
@@ -135,20 +129,6 @@ const postVisasValidationSchema = z.object({
                 message: 'Document about must be less than or equal to 50000 characters',
             }),
         ),
-        continent: z.record(languageEnum, z.string()).optional(),
-        capital: z.record(languageEnum, z.string()).optional(),
-        official_language: z.record(languageEnum, z.string()).optional(),
-        currency: z.record(languageEnum, z.string()).optional(),
-        local_time: z.record(languageEnum, z.string()).optional(),
-        exchange_rate: z.record(languageEnum, z.string()).optional(),
-        dialing_code: z.string().optional(),
-        weekend_days: z.record(languageEnum, z.string()).optional(),
-        population: z.record(languageEnum, z.string()).optional(),
-        area: z.record(languageEnum, z.string()).optional(),
-        education: z.record(languageEnum, z.string()).optional(),
-        religion: z.record(languageEnum, z.string()).optional(),
-        embassy_address: z.record(languageEnum, z.string()).optional(),
-        apply_fee: z.number().nonnegative().optional(),
 
         feathers: z.array(
             z.object({
@@ -254,12 +234,6 @@ const updateVisasValidationSchema = z.object({
                 invalid_type_error: 'Travelling to must be string',
             })
             .optional(),
-        language: z
-            .string({
-                required_error: 'Language is required',
-                invalid_type_error: 'Language must be string',
-            })
-            .optional(),
         validity: z
             .string({
                 required_error: 'validity is required',
@@ -353,20 +327,6 @@ const updateVisasValidationSchema = z.object({
                 }),
             )
             .optional(),
-        continent: z.record(languageEnum, z.string()).optional(),
-        capital: z.record(languageEnum, z.string()).optional(),
-        official_language: z.record(languageEnum, z.string()).optional(),
-        currency: z.record(languageEnum, z.string()).optional(),
-        local_time: z.record(languageEnum, z.string()).optional(),
-        exchange_rate: z.record(languageEnum, z.string()).optional(),
-        dialing_code: z.string().optional(),
-        weekend_days: z.record(languageEnum, z.string()).optional(),
-        population: z.record(languageEnum, z.string()).optional(),
-        area: z.record(languageEnum, z.string()).optional(),
-        education: z.record(languageEnum, z.string()).optional(),
-        religion: z.record(languageEnum, z.string()).optional(),
-        embassy_address: z.record(languageEnum, z.string()).optional(),
-        apply_fee: z.number().nonnegative().optional(),
 
         feathers: z
             .array(

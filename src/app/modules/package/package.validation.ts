@@ -124,6 +124,35 @@ const postPackageValidationSchema = z.object({
                 required_error: 'tour_type is required',
                 invalid_type_error: 'tour_type must be string',
             }),
+            start_location: z.string({
+                required_error: 'start_location is required',
+                invalid_type_error: 'start_location must be string',
+            }),
+            end_location: z.string({
+                required_error: 'end_location is required',
+                invalid_type_error: 'end_location must be string',
+            }),
+            difficulty_level: z.enum(['easy', 'moderate', 'hard'], {
+                required_error: 'difficulty_level is required',
+                invalid_type_error:
+                    'difficulty_level must be easy, moderate or hard',
+            }),
+            transport_type: z.string({
+                required_error: 'transport_type is required',
+                invalid_type_error: 'transport_type must be string',
+            }),
+            min_age: z.number({
+                required_error: 'min_age is required',
+                invalid_type_error: 'min_age must be number',
+            }),
+            accommodation_type: z.string({
+                required_error: 'accommodation_type is required',
+                invalid_type_error: 'accommodation_type must be string',
+            }),
+            meals_included: z.string({
+                required_error: 'meals_included is required',
+                invalid_type_error: 'meals_included must be string',
+            }),
             about: z.record(
                 languageEnum,
                 z.string({
@@ -164,7 +193,7 @@ const postPackageValidationSchema = z.object({
                 .nonempty({
                     message: 'At least one highlight is required.',
                 }),
-            include: z
+            includes: z
                 .array(
                     z.record(
                         languageEnum,
@@ -177,7 +206,7 @@ const postPackageValidationSchema = z.object({
                 .nonempty({
                     message: 'At least one include is required.',
                 }),
-            exclude: z
+            excludes: z
                 .array(
                     z.record(
                         languageEnum,
@@ -418,7 +447,10 @@ const updatePackageValidationSchema = z.object({
             })
             .refine(
                 (data) =>
-                    data.discount_type == 'flat' && data.amount < data.discount,
+                    !(
+                        data.discount_type == 'flat' &&
+                        data.amount < data.discount
+                    ),
                 {
                     message:
                         'Discount cannot be greater than amount when discount type is flat',
@@ -435,10 +467,17 @@ const updatePackageValidationSchema = z.object({
                 },
             )
             .optional(),
-        end_date: z
+        check_in: z
             .string({
-                required_error: 'end_date is required',
-                invalid_type_error: 'end_date must be string',
+                required_error: 'check_in is required',
+                invalid_type_error: 'check_in must be string',
+            })
+            .date()
+            .optional(),
+        check_out: z
+            .string({
+                required_error: 'check_out is required',
+                invalid_type_error: 'check_out must be string',
             })
             .date()
             .optional(),
@@ -452,6 +491,49 @@ const updatePackageValidationSchema = z.object({
             .string({
                 required_error: 'tour_type is required',
                 invalid_type_error: 'tour_type must be string',
+            })
+            .optional(),
+        start_location: z
+            .string({
+                required_error: 'start_location is required',
+                invalid_type_error: 'start_location must be string',
+            })
+            .optional(),
+        end_location: z
+            .string({
+                required_error: 'end_location is required',
+                invalid_type_error: 'end_location must be string',
+            })
+            .optional(),
+        difficulty_level: z
+            .enum(['easy', 'moderate', 'hard'], {
+                required_error: 'difficulty_level is required',
+                invalid_type_error:
+                    'difficulty_level must be easy, moderate or hard',
+            })
+            .optional(),
+        transport_type: z
+            .string({
+                required_error: 'transport_type is required',
+                invalid_type_error: 'transport_type must be string',
+            })
+            .optional(),
+        min_age: z
+            .number({
+                required_error: 'min_age is required',
+                invalid_type_error: 'min_age must be number',
+            })
+            .optional(),
+        accommodation_type: z
+            .string({
+                required_error: 'accommodation_type is required',
+                invalid_type_error: 'accommodation_type must be string',
+            })
+            .optional(),
+        meals_included: z
+            .string({
+                required_error: 'meals_included is required',
+                invalid_type_error: 'meals_included must be string',
             })
             .optional(),
         about: z
@@ -495,7 +577,7 @@ const updatePackageValidationSchema = z.object({
                 message: 'At least one highlight is required.',
             })
             .optional(),
-        include: z
+        includes: z
             .array(
                 z.record(
                     languageEnum,
@@ -506,7 +588,7 @@ const updatePackageValidationSchema = z.object({
                 ),
             )
             .optional(),
-        exclude: z
+        excludes: z
             .array(
                 z.record(
                     languageEnum,

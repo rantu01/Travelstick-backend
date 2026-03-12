@@ -45,6 +45,7 @@ router.put(
     '/',
     auth('admin', 'employee'),
     employeePermission('package_edit'),
+    validate(PackageValidations.updatePackageValidationSchema),
     PackageController.updatePackages,
 );
 router.patch(

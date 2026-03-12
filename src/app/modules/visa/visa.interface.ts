@@ -8,7 +8,6 @@ export type TVisa = {
     visa_type: Types.ObjectId;
     citizen_of: string;
     travelling_to: string;
-    language: string;
     validity: string;
     processing_type: string;
     visa_mode: string;
@@ -21,20 +20,6 @@ export type TVisa = {
     overview: Map<string, string>;
     documents: { key: Map<string, string>; value: Map<string, string> }[];
     document_about: Map<string, string>;
-    continent: Map<string, string>;
-    capital: Map<string, string>;
-    official_language: Map<string, string>;
-    currency: Map<string, string>;
-    local_time: Map<string, string>;
-    exchange_rate: Map<string, string>;
-    dialing_code: string;
-    weekend_days: Map<string, string>;
-    population: Map<string, string>;
-    area: Map<string, string>;
-    education: Map<string, string>;
-    religion: Map<string, string>;
-    embassy_address: Map<string, string>;
-    apply_fee: number;
     feathers: {
         logo: string;
         text: Map<string, string>;

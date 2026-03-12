@@ -20,9 +20,51 @@ import {
 import { ReviewService } from '../review/review.service';
 import { deleteFiles } from '../file/file.utils';
 
+const sanitizePackagePayload = (payload: any) => {
+    if (!payload || typeof payload !== 'object') return {};
+
+    const includes = payload.includes ?? payload.include;
+    const excludes = payload.excludes ?? payload.exclude;
+
+    const allowed = {
+        name: payload.name,
+        banner_image: payload.banner_image,
+        card_image: payload.card_image,
+        images: payload.images,
+        banner_video_url: payload.banner_video_url,
+        destination: payload.destination,
+        section: payload.section,
+        price: payload.price,
+        check_in: payload.check_in,
+        check_out: payload.check_out,
+        group_size: payload.group_size,
+        tour_type: payload.tour_type,
+        start_location: payload.start_location,
+        end_location: payload.end_location,
+        difficulty_level: payload.difficulty_level,
+        transport_type: payload.transport_type,
+        min_age: payload.min_age,
+        accommodation_type: payload.accommodation_type,
+        meals_included: payload.meals_included,
+        about: payload.about,
+        activities: payload.activities,
+        highlight: payload.highlight,
+        includes,
+        excludes,
+        feathers: payload.feathers,
+        itinerary_about: payload.itinerary_about,
+        itinerary: payload.itinerary,
+        status: payload.status,
+    };
+
+    return Object.fromEntries(
+        Object.entries(allowed).filter(([, value]) => value !== undefined),
+    );
+};
+
 export class PackageController {
     static postPackages = catchAsync(async (req, res) => {
-        const { body } = req.body;
+        const body = sanitizePackagePayload(req.body?.body);
         const data = await PackageService.findPackageByQuery(
             {
                 name: body.name,
@@ -192,11 +234,7 @@ export class PackageController {
     });
     static getPackagesByAdmin = catchAsync(async (req, res) => {
         const { query }: any = req;
-        const filter: any = {
-            group_size: {
-                $gt: 0,
-            },
-        };
+        const filter: any = {};
         if (query.search) {
             filter[`$or`] = [
                 { name: { $regex: new RegExp(query.search.trim(), 'i') } },
@@ -234,9 +272,6 @@ export class PackageController {
         const { query }: any = req;
         const filter: any = {
             status: true,
-            group_size: {
-                $gt: 0,
-            },
         };
         if (query.search) {
             filter[`$or`] = [
@@ -357,7 +392,14 @@ export class PackageController {
                             : data.price.amount -
                               (data.price.amount * data.price.discount) / 100,
                     review: dataList.docs,
-                    duration: data.check_out.getDate() - data.check_in.getDate(),
+                    duration: Math.max(
+                        1,
+                        Math.ceil(
+                            (new Date(data.check_out).getTime() -
+                                new Date(data.check_in).getTime()) /
+                                (1000 * 60 * 60 * 24),
+                        ),
+                    ),
                     review_calculation: !review_calculation
                         ? defaultRatingCalculate
                         : review_calculation,
@@ -373,8 +415,8 @@ export class PackageController {
             room_type: 0,
             hotel_type: 0,
             status: 0,
-            exclude: 0,
-            include: 0,
+            excludes: 0,
+            includes: 0,
             rounded_review: 0,
             // price:0,
             package_reviews: 0,
@@ -404,9 +446,18 @@ export class PackageController {
         });
     });
     static updatePackages = catchAsync(async (req, res) => {
-        const { body } = req.body;
-        await PackageService.findPackageById(body._id);
-        await PackageService.updatePackage({ _id: body._id }, body);
+        const rawBody = req.body?.body || {};
+        if (!rawBody?._id) {
+            throw new AppError(
+                HttpStatusCode.BadRequest,
+                'Request failed !',
+                'Package id is required for update.',
+            );
+        }
+
+        const body = sanitizePackagePayload(rawBody);
+        await PackageService.findPackageById(rawBody._id);
+        await PackageService.updatePackage({ _id: rawBody._id }, body);
         sendResponse(res, {
             statusCode: httpStatus.OK,
             success: true,

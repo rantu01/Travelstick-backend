@@ -20,9 +20,42 @@ import {
 import { ReviewService } from '../review/review.service';
 import { deleteFiles } from '../file/file.utils';
 
+const sanitizeVisaPayload = (payload: any) => {
+    if (!payload || typeof payload !== 'object') return {};
+
+    const allowed = {
+        title: payload.title,
+        banner_image: payload.banner_image,
+        card_image: payload.card_image,
+        images: payload.images,
+        visa_type: payload.visa_type,
+        citizen_of: payload.citizen_of,
+        travelling_to: payload.travelling_to,
+        validity: payload.validity,
+        processing_type: payload.processing_type,
+        visa_mode: payload.visa_mode,
+        country: payload.country,
+        price: payload.price,
+        overview: payload.overview,
+        documents: payload.documents,
+        document_about: payload.document_about,
+        feathers: payload.feathers,
+        faqs: payload.faqs,
+        status: payload.status,
+        visa_code: payload.visa_code,
+        max_stay_days: payload.max_stay_days,
+        entry_type: payload.entry_type,
+        visa_category: payload.visa_category,
+    };
+
+    return Object.fromEntries(
+        Object.entries(allowed).filter(([, value]) => value !== undefined),
+    );
+};
+
 export class VisaController {
     static postVisas = catchAsync(async (req, res) => {
-        const { body } = req.body;
+        const body = sanitizeVisaPayload(req.body?.body);
         await VisaService.createVisa(body);
         sendResponse(res, {
             statusCode: HttpStatusCode.Created,
@@ -166,9 +199,18 @@ export class VisaController {
         });
     });
     static updateVisas = catchAsync(async (req, res) => {
-        const { body } = req.body;
-        await VisaService.findVisaById(body._id);
-        await VisaService.updateVisa({ _id: body._id }, body);
+        const rawBody = req.body?.body || {};
+        if (!rawBody?._id) {
+            throw new AppError(
+                HttpStatusCode.BadRequest,
+                'Request failed !',
+                'Visa id is required for update.',
+            );
+        }
+
+        const body = sanitizeVisaPayload(rawBody);
+        await VisaService.findVisaById(rawBody._id);
+        await VisaService.updateVisa({ _id: rawBody._id }, body);
         sendResponse(res, {
             statusCode: httpStatus.OK,
             success: true,

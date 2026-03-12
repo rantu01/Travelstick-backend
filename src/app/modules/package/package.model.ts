@@ -54,6 +54,16 @@ const schema = new Schema<TPackage>(
             default: 0,
         },
         tour_type: String,
+        start_location: String,
+        end_location: String,
+        difficulty_level: {
+            type: String,
+            enum: ['easy', 'moderate', 'hard'],
+        },
+        transport_type: String,
+        min_age: Number,
+        accommodation_type: String,
+        meals_included: String,
         about: {
             type: Schema.Types.Map,
             of: String,
@@ -72,13 +82,13 @@ const schema = new Schema<TPackage>(
                 of: String,
             },
         ],
-        include: [
+        includes: [
             {
                 type: Schema.Types.Map,
                 of: String,
             },
         ],
-        exclude: [
+        excludes: [
             {
                 type: Schema.Types.Map,
                 of: String,

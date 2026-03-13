@@ -32,11 +32,11 @@ export class FileController {
                 'Only the image file is acceptable',
             );
         }
-        if (files?.image?.size > 1000000) {
+        if (files?.image?.size > 5000000) {
             throw new AppError(
                 httpStatus.BAD_REQUEST,
                 'Invalid Request',
-                'Image is too large. Please upload an image smaller than 1MB.',
+                'Image is too large. Please upload an image smaller than 5MB.',
             );
         }
         const image_name: string = body.image_file_name || 'image';
@@ -100,11 +100,11 @@ export class FileController {
         }
 
         files.images.forEach((file: any) => {
-            if (file.size > 1000000) {
+            if (file.size > 5000000) {
                 throw new AppError(
                     httpStatus.BAD_REQUEST,
                     'Invalid Request',
-                    'Image is too large. Please upload an image smaller than 1MB.',
+                    'Image is too large. Please upload an image smaller than 5MB.',
                 );
             }
             if (

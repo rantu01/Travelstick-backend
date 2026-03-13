@@ -81,6 +81,31 @@ const schema = new Schema<THotel>(
             type: Schema.Types.ObjectId,
             ref: 'destination',
         },
+        distance_from_city: {
+            type: Number,
+            default: undefined,
+        },
+        neighborhood: {
+            type: String,
+            default: undefined,
+        },
+        meal_plans: {
+            type: [String],
+            default: undefined,
+        },
+        reservation_policies: {
+            type: [String],
+            default: undefined,
+        },
+        refundability: {
+            type: String,
+            enum: ['refundable', 'non_refundable'],
+            default: undefined,
+        },
+        facilities_services: {
+            type: [String],
+            default: undefined,
+        },
         mapLink: {
             type: String,
             default: undefined,

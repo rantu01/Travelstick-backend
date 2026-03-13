@@ -13,6 +13,8 @@ export type TRoom = {
         children: number;
     };
     amenities: string[];
+    meal_plan?: string;
+    refundability?: 'refundable' | 'non_refundable';
     images: string[];
     bed_type: string;
     size: string; // e.g., "20 m²"

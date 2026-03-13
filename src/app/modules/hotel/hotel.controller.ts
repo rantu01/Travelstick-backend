@@ -286,6 +286,18 @@ export class HotelController {
         const filter: any = {
             status: true,
         };
+        const parseMultiValue = (value: string | string[]) => {
+            if (Array.isArray(value)) {
+                return value
+                    .flatMap((item) => String(item).split(','))
+                    .map((item) => item.trim())
+                    .filter(Boolean);
+            }
+            return String(value)
+                .split(',')
+                .map((item) => item.trim())
+                .filter(Boolean);
+        };
         const langCode = query.langCode || 'en';
         if (query.search) {
             filter[`$or`] = [
@@ -332,24 +344,62 @@ export class HotelController {
         }
 
         if (query.room_type) {
+            const roomTypes = parseMultiValue(query.room_type);
             filter['room_type'] = {
-                $in: query.room_type.includes(',')
-                    ? query.room_type.split(',')
-                    : [query.room_type],
+                $in: roomTypes,
             };
         }
         if (query.hotel_type) {
+            const hotelTypes = parseMultiValue(query.hotel_type);
             filter['hotel_type'] = {
-                $in: query.hotel_type.includes(',')
-                    ? query.hotel_type.split(',')
-                    : [query.hotel_type],
+                $in: hotelTypes,
             };
         }
         if (query.review) {
             filter['reviews_count'] = +query.review;
         }
         if (query.star) {
-            filter['star'] = +query.star;
+            const stars = parseMultiValue(query.star).map((value) => +value);
+            filter['star'] = {
+                $in: stars,
+            };
+        }
+        if (query.maxDistance) {
+            filter['distance_from_city'] = {
+                $lte: parseFloat(query.maxDistance),
+            };
+        }
+        if (query.neighborhood) {
+            const neighborhoods = parseMultiValue(query.neighborhood);
+            filter['neighborhood'] = {
+                $in: neighborhoods,
+            };
+        }
+        if (query.meal_plans) {
+            const mealPlans = parseMultiValue(query.meal_plans);
+            filter['meal_plans'] = {
+                $in: mealPlans,
+            };
+        }
+        if (query.reservation_policies) {
+            const reservationPolicies = parseMultiValue(
+                query.reservation_policies,
+            );
+            filter['reservation_policies'] = {
+                $in: reservationPolicies,
+            };
+        }
+        if (query.refundability) {
+            const refundabilityValues = parseMultiValue(query.refundability);
+            filter['refundability'] = {
+                $in: refundabilityValues,
+            };
+        }
+        if (query.facilities_services) {
+            const facilities = parseMultiValue(query.facilities_services);
+            filter['facilities_services'] = {
+                $in: facilities,
+            };
         }
         if (query._id) {
             const data = await HotelService.findHotelById(query._id);

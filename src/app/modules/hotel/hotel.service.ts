@@ -164,305 +164,304 @@ export class HotelService {
         return await Hotel.aggregatePaginate(aggregate, options);
     }
     static async findHotelsForSidebar() {
-        const aggregate = await Hotel.aggregate([
+        const valuePipeline = (field: string) => [
+            {
+                $match: {
+                    status: true,
+                    [field]: {
+                        $nin: [null, ''],
+                    },
+                },
+            },
             {
                 $group: {
-                    _id: null,
-                    max_price: {
-                        $max: {
-                            $cond: {
-                                if: { $eq: ['$price.discount_type', 'flat'] },
-                                then: {
-                                    $subtract: [
-                                        '$price.amount',
-                                        '$price.discount',
-                                    ],
-                                },
-                                else: {
-                                    $subtract: [
-                                        '$price.amount',
-                                        {
-                                            $multiply: [
-                                                '$price.amount',
-                                                {
-                                                    $divide: [
-                                                        '$price.discount',
-                                                        100,
-                                                    ],
-                                                },
-                                            ],
-                                        },
-                                    ],
-                                },
-                            },
-                        },
-                    },
-                    min_price: {
-                        $min: {
-                            $cond: {
-                                if: { $eq: ['$price.discount_type', 'flat'] },
-                                then: {
-                                    $subtract: [
-                                        '$price.amount',
-                                        '$price.discount',
-                                    ],
-                                },
-                                else: {
-                                    $subtract: [
-                                        '$price.amount',
-                                        {
-                                            $multiply: [
-                                                '$price.amount',
-                                                {
-                                                    $divide: [
-                                                        '$price.discount',
-                                                        100,
-                                                    ],
-                                                },
-                                            ],
-                                        },
-                                    ],
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-            {
-                $lookup: {
-                    from: 'destinations',
-                    pipeline: [
-                        {
-                            $project: { address: 1, name: 1 },
-                        },
-                        {
-                            $lookup: {
-                                from: 'hotels',
-                                let: { distId: '$_id' },
-                                pipeline: [
-                                    {
-                                        $match: {
-                                            $expr: {
-                                                $eq: [
-                                                    '$$distId',
-                                                    '$destination',
-                                                ],
-                                            },
-                                        },
-                                    },
-                                    { $project: { _id: 1, destination: 1 } },
-                                ],
-                                as: 'hotel',
-                            },
-                        },
-                        { $addFields: { count: { $size: '$hotel' } } },
-                        { $project: { hotel: 0 } },
-                    ],
-                    as: 'destination',
-                },
-            },
-            {
-                $lookup: {
-                    from: 'hotels',
-                    pipeline: [
-                        {
-                            $group: {
-                                _id: '$hotel_type',
-                                count: { $sum: 1 },
-                            },
-                        },
-                        {
-                            $project: {
-                                _id: 0,
-                                name: '$_id',
-                                count: '$count',
-                            },
-                        },
-                    ],
-                    as: 'hotel_type',
-                },
-            },
-            {
-                $lookup: {
-                    from: 'hotels',
-                    pipeline: [
-                        {
-                            $group: {
-                                _id: '$room_type',
-                                count: { $sum: 1 },
-                            },
-                        },
-                        {
-                            $project: {
-                                _id: 0,
-                                name: '$_id',
-                                count: '$count',
-                            },
-                        },
-                    ],
-                    as: 'room_type',
-                },
-            },
-            {
-                $lookup: {
-                    from: 'package_reviews',
-                    pipeline: [
-                        {
-                            $match: {
-                                hotel: {
-                                    $exists: true,
-                                },
-                            },
-                        },
-                        {
-                            $addFields: {
-                                total: {
-                                    $divide: [
-                                        {
-                                            $add: [
-                                                '$location',
-                                                '$service',
-                                                '$amenities',
-                                                '$price',
-                                                '$room',
-                                            ],
-                                        },
-                                        5,
-                                    ],
-                                },
-                            },
-                        },
-                        {
-                            $group: {
-                                _id: '$package',
-                                average_rating: {
-                                    $avg: '$total',
-                                },
-                                count: { $sum: 1 },
-                            },
-                        },
-                        {
-                            $project: {
-                                _id: 0,
-                                average_rating: { $round: '$average_rating' },
-                                count: 1,
-                            },
-                        },
-                    ],
-                    as: 'package_review',
-                },
-            },
-            {
-                $addFields: {
-                    elements: [
-                        {
-                            key: 'destination',
-                            values: '$destination',
-                        },
-                        {
-                            key: 'price',
-                            values: {
-                                max_price: '$max_price',
-                                min_price: '$min_price',
-                            },
-                        },
-                        {
-                            key: 'hotel_type',
-                            values: '$hotel_type',
-                        },
-                        {
-                            key: 'room_type',
-                            values: '$room_type',
-                        },
-                        {
-                            key: 'reviews',
-                            values: {
-                                one: {
-                                    $size: {
-                                        $filter: {
-                                            input: '$package_review',
-                                            as: 'review',
-                                            cond: {
-                                                $eq: [
-                                                    '$$review.average_rating',
-                                                    1,
-                                                ],
-                                            },
-                                        },
-                                    },
-                                },
-                                two: {
-                                    $size: {
-                                        $filter: {
-                                            input: '$package_review',
-                                            as: 'review',
-                                            cond: {
-                                                $eq: [
-                                                    '$$review.average_rating',
-                                                    2,
-                                                ],
-                                            },
-                                        },
-                                    },
-                                },
-                                three: {
-                                    $size: {
-                                        $filter: {
-                                            input: '$package_review',
-                                            as: 'review',
-                                            cond: {
-                                                $eq: [
-                                                    '$$review.average_rating',
-                                                    3,
-                                                ],
-                                            },
-                                        },
-                                    },
-                                },
-                                four: {
-                                    $size: {
-                                        $filter: {
-                                            input: '$package_review',
-                                            as: 'review',
-                                            cond: {
-                                                $eq: [
-                                                    '$$review.average_rating',
-                                                    4,
-                                                ],
-                                            },
-                                        },
-                                    },
-                                },
-                                five: {
-                                    $size: {
-                                        $filter: {
-                                            input: '$package_review',
-                                            as: 'review',
-                                            cond: {
-                                                $eq: [
-                                                    '$$review.average_rating',
-                                                    5,
-                                                ],
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    ],
+                    _id: `$${field}`,
+                    count: { $sum: 1 },
                 },
             },
             {
                 $project: {
                     _id: 0,
-                    max_price: 0,
-                    min_price: 0,
-                    hotel_type: 0,
-                    room_type: 0,
+                    name: '$_id',
+                    count: 1,
                 },
             },
+            {
+                $sort: {
+                    name: 1,
+                },
+            },
+        ];
+
+        const arrayValuePipeline = (field: string) => [
+            {
+                $match: {
+                    status: true,
+                    [field]: { $exists: true, $ne: [] },
+                },
+            },
+            { $unwind: `$${field}` },
+            {
+                $match: {
+                    [field]: { $nin: [null, ''] },
+                },
+            },
+            {
+                $group: {
+                    _id: `$${field}`,
+                    count: { $sum: 1 },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    name: '$_id',
+                    count: 1,
+                },
+            },
+            {
+                $sort: {
+                    name: 1,
+                },
+            },
+        ];
+
+        const [
+            priceAggregate,
+            distanceAggregate,
+            destination,
+            hotelType,
+            roomType,
+            neighborhood,
+            starCategory,
+            refundability,
+            mealPlans,
+            reservationPolicies,
+            facilitiesServices,
+            reviewsAggregate,
+        ] = await Promise.all([
+            Hotel.aggregate([
+                {
+                    $match: {
+                        status: true,
+                    },
+                },
+                {
+                    $group: {
+                        _id: null,
+                        max_price: {
+                            $max: {
+                                $cond: {
+                                    if: {
+                                        $eq: ['$price.discount_type', 'flat'],
+                                    },
+                                    then: {
+                                        $subtract: [
+                                            '$price.amount',
+                                            '$price.discount',
+                                        ],
+                                    },
+                                    else: {
+                                        $subtract: [
+                                            '$price.amount',
+                                            {
+                                                $multiply: [
+                                                    '$price.amount',
+                                                    {
+                                                        $divide: [
+                                                            '$price.discount',
+                                                            100,
+                                                        ],
+                                                    },
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                },
+                            },
+                        },
+                        min_price: {
+                            $min: {
+                                $cond: {
+                                    if: {
+                                        $eq: ['$price.discount_type', 'flat'],
+                                    },
+                                    then: {
+                                        $subtract: [
+                                            '$price.amount',
+                                            '$price.discount',
+                                        ],
+                                    },
+                                    else: {
+                                        $subtract: [
+                                            '$price.amount',
+                                            {
+                                                $multiply: [
+                                                    '$price.amount',
+                                                    {
+                                                        $divide: [
+                                                            '$price.discount',
+                                                            100,
+                                                        ],
+                                                    },
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            ]),
+            Hotel.aggregate([
+                {
+                    $match: {
+                        status: true,
+                        distance_from_city: { $ne: null },
+                    },
+                },
+                {
+                    $group: {
+                        _id: null,
+                        max_distance: { $max: '$distance_from_city' },
+                        min_distance: { $min: '$distance_from_city' },
+                    },
+                },
+            ]),
+            Hotel.aggregate([
+                {
+                    $match: {
+                        status: true,
+                    },
+                },
+                {
+                    $lookup: {
+                        from: 'destinations',
+                        localField: 'destination',
+                        foreignField: '_id',
+                        as: 'destination',
+                    },
+                },
+                {
+                    $unwind: {
+                        path: '$destination',
+                        preserveNullAndEmptyArrays: false,
+                    },
+                },
+                {
+                    $group: {
+                        _id: '$destination._id',
+                        count: { $sum: 1 },
+                        name: { $first: '$destination.name' },
+                        address: { $first: '$destination.address' },
+                    },
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        count: 1,
+                        name: 1,
+                        address: 1,
+                    },
+                },
+            ]),
+            Hotel.aggregate(valuePipeline('hotel_type')),
+            Hotel.aggregate(valuePipeline('room_type')),
+            Hotel.aggregate(valuePipeline('neighborhood')),
+            Hotel.aggregate(valuePipeline('star')),
+            Hotel.aggregate(valuePipeline('refundability')),
+            Hotel.aggregate(arrayValuePipeline('meal_plans')),
+            Hotel.aggregate(arrayValuePipeline('reservation_policies')),
+            Hotel.aggregate(arrayValuePipeline('facilities_services')),
+            Hotel.aggregate([
+                {
+                    $match: {
+                        hotel: { $exists: true },
+                    },
+                },
+                {
+                    $addFields: {
+                        total: {
+                            $divide: [
+                                {
+                                    $add: [
+                                        '$location',
+                                        '$service',
+                                        '$amenities',
+                                        '$price',
+                                        '$room',
+                                    ],
+                                },
+                                5,
+                            ],
+                        },
+                    },
+                },
+                {
+                    $group: {
+                        _id: { $round: ['$total', 0] },
+                        count: { $sum: 1 },
+                    },
+                },
+            ]),
         ]);
-        return aggregate[0].elements;
+
+        const reviewMap = reviewsAggregate.reduce(
+            (acc: Record<string, number>, item: { _id: number; count: number }) => {
+                if (item._id >= 1 && item._id <= 5) {
+                    const key =
+                        item._id === 1
+                            ? 'one'
+                            : item._id === 2
+                              ? 'two'
+                              : item._id === 3
+                                ? 'three'
+                                : item._id === 4
+                                  ? 'four'
+                                  : 'five';
+                    acc[key] = item.count;
+                }
+                return acc;
+            },
+            { one: 0, two: 0, three: 0, four: 0, five: 0 },
+        );
+
+        const price = priceAggregate?.[0] || { min_price: 0, max_price: 1000 };
+        const distance = distanceAggregate?.[0] || {
+            min_distance: 0,
+            max_distance: 0,
+        };
+
+        return [
+            { key: 'destination', values: destination || [] },
+            {
+                key: 'price',
+                values: {
+                    min_price: price.min_price || 0,
+                    max_price: price.max_price || 1000,
+                },
+            },
+            {
+                key: 'distance_from_city',
+                values: {
+                    min_distance: distance.min_distance || 0,
+                    max_distance: distance.max_distance || 0,
+                },
+            },
+            { key: 'hotel_type', values: hotelType || [] },
+            { key: 'room_type', values: roomType || [] },
+            { key: 'neighborhood', values: neighborhood || [] },
+            { key: 'star_category', values: starCategory || [] },
+            { key: 'meal_plans', values: mealPlans || [] },
+            {
+                key: 'reservation_policies',
+                values: reservationPolicies || [],
+            },
+            { key: 'refundability', values: refundability || [] },
+            { key: 'facilities_services', values: facilitiesServices || [] },
+            { key: 'reviews', values: reviewMap },
+        ];
     }
     static async updateHotel(
         query: Record<string, string | Types.ObjectId>,

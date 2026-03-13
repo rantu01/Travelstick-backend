@@ -22,4 +22,10 @@ export type THotel = {
     status: boolean;
     destination: Types.ObjectId;
     mapLink?: string;
+    distance_from_city?: number;
+    neighborhood?: string;
+    meal_plans?: string[];
+    reservation_policies?: string[];
+    refundability?: 'refundable' | 'non_refundable';
+    facilities_services?: string[];
 };

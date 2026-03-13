@@ -168,6 +168,48 @@ const postHotelValidationSchema = z.object({
                 invalid_type_error: 'Map link must be string',
             })
             .optional(),
+        distance_from_city: z
+            .number({
+                invalid_type_error: 'distance_from_city must be number',
+            })
+            .nonnegative({
+                message: 'distance_from_city must be non-negative',
+            })
+            .optional(),
+        neighborhood: z
+            .string({
+                invalid_type_error: 'neighborhood must be string',
+            })
+            .optional(),
+        meal_plans: z
+            .array(
+                z.string({
+                    invalid_type_error: 'meal_plans values must be string',
+                }),
+            )
+            .optional(),
+        reservation_policies: z
+            .array(
+                z.string({
+                    invalid_type_error:
+                        'reservation_policies values must be string',
+                }),
+            )
+            .optional(),
+        refundability: z
+            .enum(['refundable', 'non_refundable'], {
+                invalid_type_error:
+                    'refundability must be refundable or non_refundable',
+            })
+            .optional(),
+        facilities_services: z
+            .array(
+                z.string({
+                    invalid_type_error:
+                        'facilities_services values must be string',
+                }),
+            )
+            .optional(),
     }),
 });
 const postHotelBookingCalculationValidationSchema = z.object({
@@ -463,6 +505,48 @@ const updateHotelValidationSchema = z.object({
             .string({
                 invalid_type_error: 'Map link must be string',
             })
+            .optional(),
+        distance_from_city: z
+            .number({
+                invalid_type_error: 'distance_from_city must be number',
+            })
+            .nonnegative({
+                message: 'distance_from_city must be non-negative',
+            })
+            .optional(),
+        neighborhood: z
+            .string({
+                invalid_type_error: 'neighborhood must be string',
+            })
+            .optional(),
+        meal_plans: z
+            .array(
+                z.string({
+                    invalid_type_error: 'meal_plans values must be string',
+                }),
+            )
+            .optional(),
+        reservation_policies: z
+            .array(
+                z.string({
+                    invalid_type_error:
+                        'reservation_policies values must be string',
+                }),
+            )
+            .optional(),
+        refundability: z
+            .enum(['refundable', 'non_refundable'], {
+                invalid_type_error:
+                    'refundability must be refundable or non_refundable',
+            })
+            .optional(),
+        facilities_services: z
+            .array(
+                z.string({
+                    invalid_type_error:
+                        'facilities_services values must be string',
+                }),
+            )
             .optional(),
         status: z
             .boolean({

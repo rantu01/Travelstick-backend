@@ -28,6 +28,15 @@ const schema = new Schema<TRoom>(
             children: { type: Number, default: 0 },
         },
         amenities: [String],
+        meal_plan: {
+            type: String,
+            default: undefined,
+        },
+        refundability: {
+            type: String,
+            enum: ['refundable', 'non_refundable'],
+            default: undefined,
+        },
         images: [String],
         bed_type: String,
         size: String,

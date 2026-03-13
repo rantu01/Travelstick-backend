@@ -1,5 +1,6 @@
 import { Types } from 'mongoose';
 import Room from './room.model';
+import HotelBooking from '../hotel-booking/hotel-booking.model';
 import { TRoom } from './room.interface';
 import AppError from '../../errors/AppError';
 import { HttpStatusCode } from 'axios';
@@ -41,5 +42,35 @@ export class RoomService {
             sort: { createdAt: -1 },
         };
         return await Room.aggregatePaginate(aggregate, options);
+    }
+
+    // Returns available (unboooked) count for a room type
+    static async getAvailableRoomsCount(roomId: string | Types.ObjectId) {
+        const room = await Room.findById(roomId).lean();
+        if (!room) {
+            throw new AppError(HttpStatusCode.NotFound, 'Request failed!', 'Room not found!');
+        }
+        const totalRooms = room.total_rooms ?? 1;
+
+        // Sum up rooms_count from active (pending/confirmed) bookings for this room
+        const result = await HotelBooking.aggregate([
+            { $match: { status: { $in: ['pending', 'confirmed'] } } },
+            { $unwind: '$room_details' },
+            {
+                $match: {
+                    'room_details.room': new Types.ObjectId(String(roomId)),
+                },
+            },
+            {
+                $group: {
+                    _id: null,
+                    booked: { $sum: '$room_details.count' },
+                },
+            },
+        ]);
+
+        const bookedCount = result[0]?.booked ?? 0;
+        const available = Math.max(0, totalRooms - bookedCount);
+        return { total: totalRooms, booked: bookedCount, available };
     }
 }

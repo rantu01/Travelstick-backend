@@ -28,4 +28,7 @@ export type THotel = {
     reservation_policies?: string[];
     refundability?: 'refundable' | 'non_refundable';
     facilities_services?: string[];
+    card_badges?: string[];
+    card_room_label?: string;
+    card_room_details?: string;
 };

@@ -13,6 +13,7 @@ router.post(
 );
 
 router.get('/hotel/:hotelId', RoomController.getRoomsByHotel);
+router.get('/:id/availability', RoomController.getRoomAvailability);
 router.get('/:id', RoomController.getRoomById);
 
 router.patch(

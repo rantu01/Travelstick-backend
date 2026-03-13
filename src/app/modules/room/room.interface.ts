@@ -19,4 +19,5 @@ export type TRoom = {
     bed_type: string;
     size: string; // e.g., "20 m²"
     status: boolean;
+    total_rooms: number; // total physical rooms of this type
 };

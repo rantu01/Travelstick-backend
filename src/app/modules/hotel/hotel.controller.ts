@@ -172,6 +172,9 @@ export class HotelController {
                 data = await executePaypalPayment(payload);
             } else if (body.method == 'razorpay') {
                 data = await executeRazorpayPayment(payload);
+            } else if (body.method == 'cash') {
+                // Cash / pay-on-arrival: booking confirmed directly
+                data = { method: 'cash', booking_id: booking[0]._id.toString(), status: 'pending' };
             } else {
                 throw new AppError(
                     HttpStatusCode.BadRequest,

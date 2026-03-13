@@ -106,6 +106,18 @@ const schema = new Schema<THotel>(
             type: [String],
             default: undefined,
         },
+        card_badges: {
+            type: [String],
+            default: undefined,
+        },
+        card_room_label: {
+            type: String,
+            default: undefined,
+        },
+        card_room_details: {
+            type: String,
+            default: undefined,
+        },
         mapLink: {
             type: String,
             default: undefined,

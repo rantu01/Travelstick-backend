@@ -210,6 +210,23 @@ const postHotelValidationSchema = z.object({
                 }),
             )
             .optional(),
+        card_badges: z
+            .array(
+                z.string({
+                    invalid_type_error: 'card_badges values must be string',
+                }),
+            )
+            .optional(),
+        card_room_label: z
+            .string({
+                invalid_type_error: 'card_room_label must be string',
+            })
+            .optional(),
+        card_room_details: z
+            .string({
+                invalid_type_error: 'card_room_details must be string',
+            })
+            .optional(),
     }),
 });
 const postHotelBookingCalculationValidationSchema = z.object({
@@ -306,9 +323,9 @@ const postHotelBookingValidationSchema = z.object({
             .nonnegative({
                 message: 'amount must be non-negative',
             }),
-        method: z.enum(['stripe', 'paypal', 'razorpay'], {
+        method: z.enum(['stripe', 'paypal', 'razorpay', 'cash'], {
             required_error: 'payment is required',
-            message: 'payment method must be stripe, paypal and razorpay',
+            message: 'payment method must be stripe, paypal, razorpay or cash',
         }),
     }),
 });
@@ -547,6 +564,23 @@ const updateHotelValidationSchema = z.object({
                         'facilities_services values must be string',
                 }),
             )
+            .optional(),
+        card_badges: z
+            .array(
+                z.string({
+                    invalid_type_error: 'card_badges values must be string',
+                }),
+            )
+            .optional(),
+        card_room_label: z
+            .string({
+                invalid_type_error: 'card_room_label must be string',
+            })
+            .optional(),
+        card_room_details: z
+            .string({
+                invalid_type_error: 'card_room_details must be string',
+            })
             .optional(),
         status: z
             .boolean({

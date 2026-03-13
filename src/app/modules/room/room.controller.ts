@@ -71,4 +71,15 @@ export class RoomController {
             data,
         });
     });
+
+    static getRoomAvailability = catchAsync(async (req, res) => {
+        const { id } = req.params;
+        const data = await RoomService.getAvailableRoomsCount(id);
+        sendResponse(res, {
+            statusCode: HttpStatusCode.Ok,
+            success: true,
+            message: 'Room availability fetched successfully',
+            data,
+        });
+    });
 }

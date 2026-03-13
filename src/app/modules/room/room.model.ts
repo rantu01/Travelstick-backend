@@ -41,6 +41,7 @@ const schema = new Schema<TRoom>(
         bed_type: String,
         size: String,
         status: { type: Boolean, default: true },
+        total_rooms: { type: Number, default: 1, min: 0 },
     },
     { timestamps: true },
 );

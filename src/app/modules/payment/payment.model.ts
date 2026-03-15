@@ -14,7 +14,7 @@ const schema = new Schema<TPayment>(
         },
         method: {
             type: String,
-            enum: ['razorpay', 'stripe', 'paypal'],
+            enum: ['razorpay', 'stripe', 'paypal', 'cash'],
         },
         status: {
             type: String,

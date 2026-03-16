@@ -34,6 +34,7 @@ import { visaRoutes } from '../modules/visa/visa.route';
 import { visaInqueryRoutes } from '../modules/visa-inquery/visa-inquery.route';
 import { advertisementRouter } from '../modules/advertisement/advertisement.route';
 import { roomRoutes } from '../modules/room/room.route';
+import { customTourRequestRoutes } from '../modules/custom-tour-request/custom-tour-request.route';
 
 const router = Router();
 
@@ -162,6 +163,10 @@ const moduleRouters = [
     {
         path: '/rooms',
         route: roomRoutes,
+    },
+    {
+        path: '/custom-tour-requests',
+        route: customTourRequestRoutes,
     },
     {
         path: '/settings',

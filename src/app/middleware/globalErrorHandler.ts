@@ -22,7 +22,11 @@ const globalErrorHandler: ErrorRequestHandler = (
     let message: string = 'Something went wrong';
     let errorMessage: string = 'Server Side error';
     let errorDetails: unknown = null;
-    console.log(error);
+    try {
+        console.error(error?.name || 'Error', error?.message || error);
+    } catch {
+        console.error('Unhandled error occurred');
+    }
     if (error instanceof ZodError) {
         const simplifiedError = handleZodError(error);
         statusCode = simplifiedError?.statusCode;

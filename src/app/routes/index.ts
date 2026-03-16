@@ -22,6 +22,7 @@ import { destinationRoutes } from '../modules/destination/destination.route';
 import { activityRoutes } from '../modules/activities/activity.route';
 import { packageRoutes } from '../modules/package/package.route';
 import { offerRoutes } from '../modules/offer/offer.route';
+import { giftCardRoutes } from '../modules/gift-card/gift-card.route';
 import { paymentRoutes } from '../modules/payment/payment.route';
 import { notificationRoutes } from '../modules/notification/notification.route';
 import { sectionRoutes } from '../modules/setting-section/setting-section.route';
@@ -54,6 +55,10 @@ const moduleRouters = [
     {
         path: '/offers',
         route: offerRoutes,
+    },
+    {
+        path: '/gift-cards',
+        route: giftCardRoutes,
     },
     {
         path: '/activities',

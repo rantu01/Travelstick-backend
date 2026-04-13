@@ -29,6 +29,7 @@ export type TPackage = {
     highlight: Map<string, string>[];
     includes: Map<string, string>[];
     excludes: Map<string, string>[];
+    policies: Map<string, string>[];
     feathers: {
         logo: string;
         text: Map<string, string>;

@@ -51,6 +51,7 @@ const sanitizePackagePayload = (payload: any) => {
         highlight: payload.highlight,
         includes,
         excludes,
+        policies: payload.policies ?? payload.policy,
         feathers: payload.feathers,
         itinerary_about: payload.itinerary_about,
         itinerary: payload.itinerary,

@@ -94,6 +94,12 @@ const schema = new Schema<TPackage>(
                 of: String,
             },
         ],
+        policies: [
+            {
+                type: Schema.Types.Map,
+                of: String,
+            },
+        ],
         feathers: [
             {
                 logo: String,

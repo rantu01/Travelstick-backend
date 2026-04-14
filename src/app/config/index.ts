@@ -11,6 +11,9 @@ export default {
     website_name: process.env.WEBSITE_NAME,
     node_env: process.env.NODE_ENV,
     mode: process.env.MODE,
+    client_side_url: process.env.CLIENT_SIDE_URL,
+    server_side_url: process.env.SERVER_SIDE_URL,
+    cors_origins: process.env.CORS_ORIGINS,
 
     bcrypt_salt_rounds: process.env.BCRYPT_SALT_ROUNDS,
     jwt_access_secret: process.env.JWT_ACCESS_SECRET,

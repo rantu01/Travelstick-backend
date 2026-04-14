@@ -120,15 +120,18 @@ const postVisasValidationSchema = z.object({
             )
             .optional(),
         // ✅ 5000 → 50000
-        document_about: z.record(
-            languageEnum,
-            z.string({
-                required_error: 'Document about is required',
-                invalid_type_error: 'Document about must be string',
-            }).max(50000, {
-                message: 'Document about must be less than or equal to 50000 characters',
-            }),
-        ),
+        document_about: z
+            .record(
+                languageEnum,
+                z.string({
+                    required_error: 'Document about is required',
+                    invalid_type_error: 'Document about must be string',
+                }).max(50000, {
+                    message: 'Document about must be less than or equal to 50000 characters',
+                }),
+            )
+            .optional()
+            .default({}),
 
         feathers: z.array(
             z.object({

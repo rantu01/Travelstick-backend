@@ -49,6 +49,10 @@ const schema = new Schema<TPackage>(
             type: Date,
             required: [true, 'check_in is required'],
         },
+        available_dates: {
+            type: [Date],
+            default: [],
+        },
         group_size: {
             type: Number,
             default: 0,

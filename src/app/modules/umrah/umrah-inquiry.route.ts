@@ -18,14 +18,12 @@ router.post(
 router.get(
     '/',
     auth('admin', 'employee'),
-    employeePermission('umrah_inquiry_view'),
     UmrahInquiryController.getAllUmrahInquiries,
 );
 
 router.get(
     '/:id',
     auth('admin', 'employee'),
-    employeePermission('umrah_inquiry_view'),
     UmrahInquiryController.getSingleUmrahInquiry,
 );
 

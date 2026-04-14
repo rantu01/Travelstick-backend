@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import mongoose from 'mongoose';
+import { USER_ROLE_ENUM } from '../../utils/constants';
 
 const registerValidationSchema = z.object({
     body: z.object({
@@ -270,10 +271,27 @@ const updateEmployeeValidationSchema = z.object({
             .optional(),
     }),
 });
+const updateUserRoleValidationSchema = z.object({
+    body: z.object({
+        _id: z
+            .string({
+                invalid_type_error: 'User id must be string',
+                required_error: 'User id is required',
+            })
+            .refine((data) => mongoose.Types.ObjectId.isValid(data), {
+                message: 'User id is invalid',
+            }),
+        role: z.enum(USER_ROLE_ENUM as [string, ...string[]], {
+            required_error: 'User role is required',
+            invalid_type_error: 'User role must be string',
+        }),
+    }),
+});
 export const UserValidations = {
     registerValidationSchema,
     updateUserProfileValidationSchema,
     postEmployeeValidationSchema,
     updatePasswordValidationSchema,
     updateEmployeeValidationSchema,
+    updateUserRoleValidationSchema,
 };

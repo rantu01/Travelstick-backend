@@ -40,14 +40,22 @@ const postDestinationValidationSchema = z.object({
                 message: 'Description must be object',
             },
         ),
+        image: z.string({
+            required_error: 'Image is required',
+            invalid_type_error: 'Image must be string',
+        }),
+        country: z.string({
+            required_error: 'Country is required',
+            invalid_type_error: 'Country must be string',
+        }),
         card_image: z.string({
             required_error: 'Card image is required',
             invalid_type_error: 'Card image must be string',
-        }),
+        }).optional(),
         banner_image: z.string({
             required_error: 'Banner image is required',
             invalid_type_error: 'Banner image must be string',
-        }),
+        }).optional(),
         images: z
             .array(
                 z.string({
@@ -68,15 +76,15 @@ const postDestinationValidationSchema = z.object({
         capital: z.string({
             required_error: 'Capital is required',
             invalid_type_error: 'Capital must be string',
-        }),
+        }).optional(),
         language: z.string({
             required_error: 'Language is required',
             invalid_type_error: 'Language must be string',
-        }),
+        }).optional(),
         currency: z.string({
             required_error: 'Capital is required',
             invalid_type_error: 'Capital must be string',
-        }),
+        }).optional(),
 
         address: z.object({
             name: z.string({
@@ -91,7 +99,7 @@ const postDestinationValidationSchema = z.object({
                 required_error: 'Longitude is required',
                 invalid_type_error: 'Longitude is required',
             }),
-        }),
+            }).optional(),
     }),
 });
 const updateDestinationValidationSchema = z.object({
@@ -146,6 +154,18 @@ const updateDestinationValidationSchema = z.object({
                     message: 'Description must be object',
                 },
             )
+            .optional(),
+        image: z
+            .string({
+                required_error: 'Image is required',
+                invalid_type_error: 'Image must be string',
+            })
+            .optional(),
+        country: z
+            .string({
+                required_error: 'Country is required',
+                invalid_type_error: 'Country must be string',
+            })
             .optional(),
         card_image: z
             .string({

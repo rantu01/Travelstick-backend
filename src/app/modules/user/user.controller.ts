@@ -151,10 +151,14 @@ export class UserController {
     });
     static getUserListByAdmin = catchAsync(async (req, res) => {
         const { query }: any = req;
+        // By default return users of any role; keep is_deleted filter.
+        // If a caller specifically wants to filter by role, they can pass `role` in query.
         const filter: any = {
-            role: 'user',
             is_deleted: false,
         };
+        if (query?.role) {
+            filter.role = query.role;
+        }
         if (query?.search) {
             filter['$or'] = [
                 { name: { $regex: query.search, $options: 'i' } },
@@ -219,6 +223,34 @@ export class UserController {
             success: true,
             message: 'Get employee List successfully',
             data: employee,
+        });
+    });
+    static updateUserRoleByAdmin = catchAsync(async (req, res) => {
+        const { body } = req.body;
+        const user: any = await UserService.findUserById(body._id);
+        if (!user || user?.is_deleted === true) {
+            throw new AppError(400, 'Request failed', 'User can not exists');
+        }
+
+        const updateDocument: Record<string, any> = {
+            $set: {
+                role: body.role,
+            },
+        };
+
+        if (body.role !== 'employee') {
+            updateDocument.$unset = {
+                permissions: 1,
+            };
+        }
+
+        await UserService.updateUserProfile({ _id: body._id }, updateDocument);
+
+        sendResponse(res, {
+            statusCode: httpStatus.OK,
+            success: true,
+            message: 'User role updated successfully',
+            data: undefined,
         });
     });
     static userProfileUpdate = catchAsync(async (req, res) => {

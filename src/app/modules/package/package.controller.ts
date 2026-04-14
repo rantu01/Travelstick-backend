@@ -37,6 +37,7 @@ const sanitizePackagePayload = (payload: any) => {
         price: payload.price,
         check_in: payload.check_in,
         check_out: payload.check_out,
+        available_dates: payload.available_dates,
         group_size: payload.group_size,
         tour_type: payload.tour_type,
         start_location: payload.start_location,
@@ -63,9 +64,42 @@ const sanitizePackagePayload = (payload: any) => {
     );
 };
 
+const toDateKey = (value: Date | string) => {
+    const date = new Date(value);
+    return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(
+        2,
+        '0',
+    )}-${String(date.getUTCDate()).padStart(2, '0')}`;
+};
+
+const isSelectedDateAllowed = (
+    selectedDate: string,
+    availableDates: Date[] = [],
+) => {
+    if (!availableDates.length) return true;
+    const selectedKey = toDateKey(selectedDate);
+    return availableDates.some((date) => toDateKey(date) === selectedKey);
+};
+
+const normalizeAvailableDates = (availableDates: string[] = []) => {
+    if (!Array.isArray(availableDates) || !availableDates.length) return [];
+
+    const uniqueDates = new Set<string>();
+    for (const date of availableDates) {
+        uniqueDates.add(toDateKey(date));
+    }
+
+    return Array.from(uniqueDates)
+        .sort()
+        .map((date) => new Date(date));
+};
+
 export class PackageController {
     static postPackages = catchAsync(async (req, res) => {
         const body = sanitizePackagePayload(req.body?.body);
+        if (Array.isArray(body?.available_dates)) {
+            body.available_dates = normalizeAvailableDates(body.available_dates);
+        }
         const data = await PackageService.findPackageByQuery(
             {
                 name: body.name,
@@ -90,6 +124,27 @@ export class PackageController {
     static postPackageBookingCalculation = catchAsync(async (req, res) => {
         const { body } = req.body;
         const package_data = await PackageService.findPackageById(body.package);
+
+        if (package_data?.available_dates?.length) {
+            if (!body?.date) {
+                throw new AppError(
+                    httpStatus.BAD_REQUEST,
+                    'Request Failed !',
+                    'Booking date is required for this package.',
+                );
+            }
+
+            if (
+                !isSelectedDateAllowed(body.date, package_data.available_dates)
+            ) {
+                throw new AppError(
+                    httpStatus.BAD_REQUEST,
+                    'Request Failed !',
+                    'Selected date is not available for this package.',
+                );
+            }
+        }
+
         const package_amount =
             package_data.price.discount_type === 'flat'
                 ? package_data.price.amount - package_data.price.discount
@@ -127,6 +182,40 @@ export class PackageController {
             const package_data = await PackageService.findPackageById(
                 body.package,
             );
+
+            if (package_data?.available_dates?.length) {
+                if (!body?.date) {
+                    throw new AppError(
+                        httpStatus.BAD_REQUEST,
+                        'Request Failed !',
+                        'Booking date is required for this package.',
+                    );
+                }
+
+                if (
+                    !isSelectedDateAllowed(
+                        body.date,
+                        package_data.available_dates,
+                    )
+                ) {
+                    throw new AppError(
+                        httpStatus.BAD_REQUEST,
+                        'Request Failed !',
+                        'Selected date is not available for this package.',
+                    );
+                }
+            }
+
+            const selectedCheckIn = body?.date
+                ? new Date(body.date)
+                : new Date(package_data.check_in);
+            const packageDurationMs =
+                new Date(package_data.check_out).getTime() -
+                new Date(package_data.check_in).getTime();
+            const selectedCheckOut = body?.date
+                ? new Date(selectedCheckIn.getTime() + Math.max(packageDurationMs, 0))
+                : new Date(package_data.check_out);
+
             const payment = await PaymentService.createPayment(
                 {
                     user: user._id,
@@ -141,8 +230,8 @@ export class PackageController {
             const booking = await PackageBookingService.createPackageBooking(
                 {
                     booking_id: await generateBookingId('b-'),
-                    check_in: package_data.check_in,
-                    check_out: package_data.check_out,
+                    check_in: selectedCheckIn,
+                    check_out: selectedCheckOut,
                     person: body.person,
                     services: body.services,
                     package: body.package,
@@ -457,6 +546,9 @@ export class PackageController {
         }
 
         const body = sanitizePackagePayload(rawBody);
+        if (Array.isArray(body?.available_dates)) {
+            body.available_dates = normalizeAvailableDates(body.available_dates);
+        }
         await PackageService.findPackageById(rawBody._id);
         await PackageService.updatePackage({ _id: rawBody._id }, body);
         sendResponse(res, {

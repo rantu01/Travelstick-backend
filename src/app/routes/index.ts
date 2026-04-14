@@ -33,6 +33,7 @@ import { testimonialRoutes } from '../modules/testimonial/testimonial.route';
 import { visaTypeRoutes } from '../modules/visa-type/visa-type.route';
 import { visaRoutes } from '../modules/visa/visa.route';
 import { visaInqueryRoutes } from '../modules/visa-inquery/visa-inquery.route';
+import { umrahInquiryRoutes } from '../modules/umrah/umrah-inquiry.route';
 import { advertisementRouter } from '../modules/advertisement/advertisement.route';
 import { roomRoutes } from '../modules/room/room.route';
 import { customTourRequestRoutes } from '../modules/custom-tour-request/custom-tour-request.route';
@@ -161,6 +162,10 @@ const moduleRouters = [
     {
         path: '/visas/inquiries',
         route: visaInqueryRoutes,
+    },
+    {
+        path: '/umrah-inquiry',
+        route: umrahInquiryRoutes,
     },
     {
         path: '/visas',

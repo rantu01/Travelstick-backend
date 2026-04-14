@@ -27,10 +27,19 @@ export class DestinationController {
                 'Destination already exists ! please change your destination name',
             );
         }
-        body.location = {
-            type: 'Point',
-            coordinates: [body.address.lat, body.address.lng],
-        };
+        body.card_image = body.card_image || body.image;
+        body.banner_image = body.banner_image || body.image;
+        body.images =
+            Array.isArray(body.images) && body.images.length > 0
+                ? body.images
+                : [body.image];
+
+        if (body.address?.lat && body.address?.lng) {
+            body.location = {
+                type: 'Point',
+                coordinates: [body.address.lat, body.address.lng],
+            };
+        }
         await DestinationService.createDestination(body);
         sendResponse(res, {
             statusCode: HttpStatusCode.Created,
@@ -121,6 +130,8 @@ export class DestinationController {
         }
         const select = {
             name: 1,
+            country: 1,
+            image: 1,
             address: 1,
             short_description: 1,
             description:1,
@@ -143,7 +154,14 @@ export class DestinationController {
     static updateDestinations = catchAsync(async (req, res) => {
         const { body } = req.body;
         await DestinationService.findDestinationById(body._id);
-        if (body.address) {
+        if (body.image) {
+            body.card_image = body.card_image || body.image;
+            body.banner_image = body.banner_image || body.image;
+            if (!Array.isArray(body.images) || body.images.length === 0) {
+                body.images = [body.image];
+            }
+        }
+        if (body.address?.lat && body.address?.lng) {
             body.location = {
                 type: 'Point',
                 coordinates: [body.address.lat, body.address.lng],

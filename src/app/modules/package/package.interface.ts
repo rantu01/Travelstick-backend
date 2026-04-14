@@ -15,6 +15,7 @@ export type TPackage = {
     };
     check_out: Date;
     check_in: Date;
+    available_dates?: Date[];
     group_size: number;
     tour_type: string;
     start_location: string;

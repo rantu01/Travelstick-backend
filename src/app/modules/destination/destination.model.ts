@@ -16,6 +16,14 @@ const schema = new Schema<TDestination>(
             type: Schema.Types.Map,
             of: String,
         },
+        image: {
+            type: String,
+            required: [true, 'Image is required'],
+        },
+        country: {
+            type: String,
+            required: [true, 'Country is required'],
+        },
         card_image: String,
         banner_image: String,
         images: {

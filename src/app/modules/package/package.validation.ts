@@ -116,6 +116,17 @@ const postPackageValidationSchema = z.object({
                     invalid_type_error: 'check_out must be string',
                 })
                 .date(),
+            available_dates: z
+                .array(
+                    z
+                        .string({
+                            required_error: 'available date is required',
+                            invalid_type_error:
+                                'available date must be string',
+                        })
+                        .date(),
+                )
+                .optional(),
             group_size: z.number({
                 required_error: 'group_size is required',
                 invalid_type_error: 'group_size must be number',
@@ -318,6 +329,12 @@ const postPackageBookingCalculationValidationSchema = z.object({
                     }),
             )
             .optional(),
+        date: z
+            .string({
+                invalid_type_error: 'date must be string',
+            })
+            .date()
+            .optional(),
     }),
 });
 const postPackageBookingValidationSchema = z.object({
@@ -349,6 +366,12 @@ const postPackageBookingValidationSchema = z.object({
                         message: '_id is invalid',
                     }),
             )
+            .optional(),
+        date: z
+            .string({
+                invalid_type_error: 'date must be string',
+            })
+            .date()
             .optional(),
         amount: z
             .number({
@@ -491,6 +514,17 @@ const updatePackageValidationSchema = z.object({
                 invalid_type_error: 'check_out must be string',
             })
             .date()
+            .optional(),
+        available_dates: z
+            .array(
+                z
+                    .string({
+                        required_error: 'available date is required',
+                        invalid_type_error:
+                            'available date must be string',
+                    })
+                    .date(),
+            )
             .optional(),
         group_size: z
             .number({

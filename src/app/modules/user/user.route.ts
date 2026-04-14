@@ -23,6 +23,12 @@ router.post(
 
 router.get('/profile', auth(...USER_ROLE_ENUM), UserController.getUserProfile);
 router.get('/', auth('admin'), UserController.getUserListByAdmin);
+router.patch(
+    '/role',
+    auth('admin'),
+    validate(UserValidations.updateUserRoleValidationSchema),
+    UserController.updateUserRoleByAdmin,
+);
 router.get(
     '/employees',
     auth('admin', 'employee'),

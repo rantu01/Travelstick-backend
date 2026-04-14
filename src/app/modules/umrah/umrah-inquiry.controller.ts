@@ -5,7 +5,8 @@ import { UmrahInquiryService } from './umrah-inquiry.service';
 
 export class UmrahInquiryController {
     static createUmrahInquiry = catchAsync(async (req, res) => {
-        const result = await UmrahInquiryService.createUmrahInquiry(req.body);
+        const { body } = req.body;
+        const result = await UmrahInquiryService.createUmrahInquiry(body);
         sendResponse(res, {
             statusCode: HttpStatusCode.Created,
             success: true,
@@ -37,7 +38,8 @@ export class UmrahInquiryController {
 
     static updateUmrahInquiry = catchAsync(async (req, res) => {
         const { id } = req.params;
-        const result = await UmrahInquiryService.updateUmrahInquiry(id, req.body);
+        const { body } = req.body;
+        const result = await UmrahInquiryService.updateUmrahInquiry(id, body);
         sendResponse(res, {
             statusCode: HttpStatusCode.Ok,
             success: true,

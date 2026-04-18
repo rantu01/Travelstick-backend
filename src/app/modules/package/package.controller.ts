@@ -25,6 +25,12 @@ const sanitizePackagePayload = (payload: any) => {
 
     const includes = payload.includes ?? payload.include;
     const excludes = payload.excludes ?? payload.exclude;
+    const policiesPayload = payload.policies ?? payload.policy;
+    const normalizedPolicies = Array.isArray(policiesPayload)
+        ? policiesPayload
+        : policiesPayload && typeof policiesPayload === 'object'
+          ? [policiesPayload]
+          : undefined;
 
     const allowed = {
         name: payload.name,
@@ -52,7 +58,7 @@ const sanitizePackagePayload = (payload: any) => {
         highlight: payload.highlight,
         includes,
         excludes,
-        policies: payload.policies ?? payload.policy,
+        policies: normalizedPolicies,
         feathers: payload.feathers,
         itinerary_about: payload.itinerary_about,
         itinerary: payload.itinerary,

@@ -231,7 +231,7 @@ const postPackageValidationSchema = z.object({
                     message: 'At least one exclude is required.',
                 }),
             policies: z
-                .array(
+                .union([
                     z.record(
                         languageEnum,
                         z.string({
@@ -239,7 +239,16 @@ const postPackageValidationSchema = z.object({
                             invalid_type_error: 'policy must be string',
                         }),
                     ),
-                )
+                    z.array(
+                        z.record(
+                            languageEnum,
+                            z.string({
+                                required_error: 'policy is required',
+                                invalid_type_error: 'policy must be string',
+                            }),
+                        ),
+                    ),
+                ])
                 .optional(),
             feathers: z.array(
                 z.object({
@@ -645,7 +654,7 @@ const updatePackageValidationSchema = z.object({
             )
             .optional(),
         policies: z
-            .array(
+            .union([
                 z.record(
                     languageEnum,
                     z.string({
@@ -653,7 +662,16 @@ const updatePackageValidationSchema = z.object({
                         invalid_type_error: 'policy must be string',
                     }),
                 ),
-            )
+                z.array(
+                    z.record(
+                        languageEnum,
+                        z.string({
+                            required_error: 'policy is required',
+                            invalid_type_error: 'policy must be string',
+                        }),
+                    ),
+                ),
+            ])
             .optional(),
         feathers: z
             .array(

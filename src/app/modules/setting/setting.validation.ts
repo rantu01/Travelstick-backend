@@ -89,6 +89,18 @@ const postSettingValidationSchema = z.object({
                 required_error: 'banner_image is required',
             })
             .optional(),
+        login_upper_bg_image: z
+            .string({
+                invalid_type_error: 'login_upper_bg_image must be string',
+                required_error: 'login_upper_bg_image is required',
+            })
+            .optional(),
+        login_lower_bg_image: z
+            .string({
+                invalid_type_error: 'login_lower_bg_image must be string',
+                required_error: 'login_lower_bg_image is required',
+            })
+            .optional(),
         otp_verification_type: z
             .enum(['email', 'phone'], {
                 message: 'otp_verification_type must be email or phone',

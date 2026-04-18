@@ -12,6 +12,8 @@ export type TSetting = {
     client_side_url?: string;
     server_side_url?: string;
     banner_image: string;
+    login_upper_bg_image?: string;
+    login_lower_bg_image?: string;
     otp_verification_type?: 'email' | 'phone';
     file_upload_type: 'local' | 's3';
     per_kiloliter_charge: number;

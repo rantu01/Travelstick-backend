@@ -16,6 +16,8 @@ const schema = new Schema<TSetting>(
         client_side_url: String,
         server_side_url: String,
         banner_image: String,
+        login_upper_bg_image: String,
+        login_lower_bg_image: String,
         per_kiloliter_charge: {
             type: Number,
             default: 0,

@@ -38,6 +38,8 @@ export class SettingController {
             site_phone: 1,
             site_logo: 1,
             banner_image: 1,
+            login_upper_bg_image: 1,
+            login_lower_bg_image: 1,
             otp_verification_type: 1,
             site_address: 1,
             site_description: 1,

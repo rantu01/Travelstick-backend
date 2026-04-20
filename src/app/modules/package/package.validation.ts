@@ -390,10 +390,12 @@ const postPackageBookingValidationSchema = z.object({
             .nonnegative({
                 message: 'amount must be non-negative',
             }),
-        method: z.enum(['stripe', 'paypal', 'razorpay'], {
+        method: z.enum(['stripe', 'paypal', 'razorpay', 'cash', 'none'], {
             required_error: 'payment is required',
-            message: 'payment method must be stripe, paypal and razorpay',
+            message:
+                'payment method must be stripe, paypal, razorpay, cash or none',
         }),
+        without_payment: z.boolean().optional(),
     }),
 });
 const updatePackageValidationSchema = z.object({

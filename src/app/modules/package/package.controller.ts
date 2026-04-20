@@ -222,10 +222,16 @@ export class PackageController {
                 ? new Date(selectedCheckIn.getTime() + Math.max(packageDurationMs, 0))
                 : new Date(package_data.check_out);
 
+            // TEMP DIRECT BOOKING FLOW:
+            // For "Book Now Without Payment", we store method as cash and skip all gateway redirects.
+            const requestedMethod = body?.method === 'none' ? 'cash' : body?.method;
+            const isDirectBookingWithoutGateway =
+                requestedMethod === 'cash' || body?.without_payment === true;
+
             const payment = await PaymentService.createPayment(
                 {
                     user: user._id,
-                    method: body.method,
+                    method: requestedMethod,
                     status: 'pending',
                     payment_type: 'package',
                     transaction_id: await generateTransactionId('Tx'),
@@ -253,25 +259,29 @@ export class PackageController {
                 payment_type: 'package',
                 booking_id: booking[0]._id.toString(),
             } as TPaymentMethodPayload;
-            if (body.method == 'stripe') {
-                data = await executeStripePayment(payload);
-            } else if (body.method == 'paypal') {
-                data = await executePaypalPayment(payload);
-            } else if (body.method == 'razorpay') {
-                data = await executeRazorpayPayment(payload);
-            } else {
-                throw new AppError(
-                    HttpStatusCode.BadRequest,
-                    'Request Failed !',
-                    "Payment method doesn't exist! please try again",
-                );
+
+            if (!isDirectBookingWithoutGateway) {
+                if (requestedMethod == 'stripe') {
+                    data = await executeStripePayment(payload);
+                } else if (requestedMethod == 'paypal') {
+                    data = await executePaypalPayment(payload);
+                } else if (requestedMethod == 'razorpay') {
+                    data = await executeRazorpayPayment(payload);
+                } else {
+                    throw new AppError(
+                        HttpStatusCode.BadRequest,
+                        'Request Failed !',
+                        "Payment method doesn't exist! please try again",
+                    );
+                }
             }
             await session.commitTransaction();
             sendResponse(res, {
                 statusCode: HttpStatusCode.Ok,
                 success: true,
-                message:
-                    'Your booking request has been received. Please allow some time for processing.',
+                message: isDirectBookingWithoutGateway
+                    ? 'Package booked successfully without online payment.'
+                    : 'Your booking request has been received. Please allow some time for processing.',
                 data: data,
             });
         } catch (error) {

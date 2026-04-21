@@ -4,6 +4,7 @@ import auth from '../../middleware/auth';
 import { PackageValidations } from './package.validation';
 import { PackageController } from './package.controller';
 import employeePermission from '../../middleware/employeePermission';
+import { USER_ROLE_ENUM } from '../../utils/constants';
 
 const router = Router();
 
@@ -21,7 +22,7 @@ router.post(
 );
 router.post(
     '/booking',
-    auth('user'),
+    auth(...USER_ROLE_ENUM),
     validate(PackageValidations.postPackageBookingValidationSchema),
     PackageController.postPackageBooking,
 );

@@ -92,6 +92,33 @@ export class PackageService {
             },
             {
                 $lookup: {
+                    from: 'packages',
+                    let: { destinationId: '$destination._id' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        {
+                                            $eq: [
+                                                '$destination',
+                                                '$$destinationId',
+                                            ],
+                                        },
+                                        { $eq: ['$status', true] },
+                                    ],
+                                },
+                            },
+                        },
+                        {
+                            $count: 'count',
+                        },
+                    ],
+                    as: 'destination_packages',
+                },
+            },
+            {
+                $lookup: {
                     from: 'package_reviews',
                     localField: '_id',
                     pipeline: [
@@ -120,6 +147,17 @@ export class PackageService {
             },
             {
                 $addFields: {
+                    total_packages: {
+                        $ifNull: [
+                            {
+                                $arrayElemAt: [
+                                    '$destination_packages.count',
+                                    0,
+                                ],
+                            },
+                            0,
+                        ],
+                    },
                     regular_price: '$price.amount',
                     current_price: {
                         $cond: {

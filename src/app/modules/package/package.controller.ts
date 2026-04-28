@@ -360,6 +360,7 @@ export class PackageController {
             is_deleted: 0,
             updatedAt: 0,
             activities: 0,
+            destination_packages: 0,
             __v: 0,
         };
         const dataList = await PackageService.findPackagesWithPagination(
@@ -526,6 +527,7 @@ export class PackageController {
             rounded_review: 0,
             // price:0,
             package_reviews: 0,
+            destination_packages: 0,
             highlight: 0,
             about: 0,
             __v: 0,

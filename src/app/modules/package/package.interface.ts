@@ -41,4 +41,5 @@ export type TPackage = {
         description: Map<string, string>;
     }[];
     status: boolean;
+    total_packages?: number;
 };

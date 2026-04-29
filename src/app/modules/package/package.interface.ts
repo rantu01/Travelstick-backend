@@ -25,6 +25,7 @@ export type TPackage = {
     min_age: number;
     accommodation_type: string;
     meals_included: string;
+    airfare?: 'with' | 'without';
     about: Map<string, string>;
     activities: Types.ObjectId[];
     highlight: Map<string, string>[];

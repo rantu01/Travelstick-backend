@@ -68,6 +68,10 @@ const schema = new Schema<TPackage>(
         min_age: Number,
         accommodation_type: String,
         meals_included: String,
+        airfare: {
+            type: String,
+            enum: ['with', 'without'],
+        },
         about: {
             type: Schema.Types.Map,
             of: String,

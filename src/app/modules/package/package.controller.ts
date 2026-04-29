@@ -52,8 +52,7 @@ const sanitizePackagePayload = (payload: any) => {
         transport_type: payload.transport_type,
         min_age: payload.min_age,
         accommodation_type: payload.accommodation_type,
-        meals_included: payload.meals_included,
-        about: payload.about,
+        meals_included: payload.meals_included,        airfare: payload.airfare,        about: payload.about,
         activities: payload.activities,
         highlight: payload.highlight,
         includes,
@@ -437,6 +436,9 @@ export class PackageController {
         }
         if (query.discount) {
             filter['price.discount'] = +query.discount;
+        }
+        if (query.airfare) {
+            filter['airfare'] = query.airfare;
         }
 
         if (query._id) {

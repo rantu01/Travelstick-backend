@@ -2,12 +2,37 @@ import { catchAsync } from '../../utils/catchAsync';
 import { HttpStatusCode } from 'axios';
 import sendResponse from '../../utils/sendResponse';
 import { VisaInqueryService } from './visa-inquery.service';
+import Visa from '../visa/visa.model';
 
 export class VisaInqueryController {
+    private static resolveVisaName(title: unknown): string {
+        if (!title || typeof title !== 'object') return '';
+        const titleMap = title as Record<string, string>;
+        return titleMap.en || Object.values(titleMap)[0] || '';
+    }
+
+    private static async resolveVisaMeta(payload: Record<string, any>) {
+        if (!payload?.visa) return payload;
+
+        const visaDoc = await Visa.findById(payload.visa)
+            .select('title visa_type')
+            .lean();
+
+        if (!visaDoc) return payload;
+
+        return {
+            ...payload,
+            visa_type: payload.visa_type || visaDoc.visa_type,
+            visa_name:
+                payload.visa_name ||
+                VisaInqueryController.resolveVisaName(visaDoc.title),
+        };
+    }
+
     static postVisaInqueries = catchAsync(async (req, res) => {
         const { body } = req.body;
-        const { user } = res.locals;
-        await VisaInqueryService.createVisaInquery(body);
+        const payload = await VisaInqueryController.resolveVisaMeta(body);
+        await VisaInqueryService.createVisaInquery(payload);
         sendResponse(res, {
             statusCode: HttpStatusCode.Created,
             success: true,
@@ -15,6 +40,7 @@ export class VisaInqueryController {
             data: undefined,
         });
     });
+
     static getVisaInquery = catchAsync(async (req, res) => {
         const { query }: any = req;
         const { user } = res.locals;
@@ -24,8 +50,16 @@ export class VisaInqueryController {
             filter['email'] = user.email;
         }
 
-        if (query.inquiry_type) {
-            filter['inquiry_type'] = query.inquiry_type;
+        if (query.inquiry_type === 'inquiry') {
+            filter['$or'] = [
+                { inquiry_type: 'inquiry' },
+                { inquiry_type: { $exists: false } },
+                { inquiry_type: null },
+            ];
+        }
+
+        if (query.inquiry_type === 'apply') {
+            filter['inquiry_type'] = 'apply';
         }
 
         if (query._id) {
@@ -36,6 +70,7 @@ export class VisaInqueryController {
                 message: 'Visa inquery get successfully',
                 data,
             });
+            return;
         }
 
         const select = {
@@ -67,10 +102,13 @@ export class VisaInqueryController {
             data: undefined,
         });
     });
+
     static postVisaApply = catchAsync(async (req, res) => {
         const { body } = req.body;
+        const enriched = await VisaInqueryController.resolveVisaMeta(body);
         await VisaInqueryService.createVisaInquery({
-            ...body,
+            ...enriched,
+            full_name: body.full_name || `${body.given_name} ${body.last_name}`.trim(),
             inquiry_type: 'apply',
         });
         sendResponse(res, {

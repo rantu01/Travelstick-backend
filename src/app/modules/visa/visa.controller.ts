@@ -198,6 +198,24 @@ export class VisaController {
             data: dataList,
         });
     });
+    static getVisaById = catchAsync(async (req, res) => {
+        const { id } = req.params;
+        const data = await VisaService.findVisaById(id);
+        const current_price =
+            data.price.discount_type == 'flat'
+                ? data.price.amount - data.price.discount
+                : data.price.amount -
+                  (data.price.amount * data.price.discount) / 100;
+        sendResponse(res, {
+            statusCode: HttpStatusCode.Ok,
+            success: true,
+            message: 'Visa get successfully',
+            data: {
+                ...data.toObject?.(),
+                current_price,
+            },
+        });
+    });
     static updateVisas = catchAsync(async (req, res) => {
         const rawBody = req.body?.body || {};
         if (!rawBody?._id) {

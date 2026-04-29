@@ -23,6 +23,10 @@ router.get(
 );
 router.get('/sidebar', VisaController.getVisasForSidebar);
 router.get('/site', VisaController.getVisasByPublic);
+router.get(
+    '/:id',
+    VisaController.getVisaById,
+);
 router.put(
     '/',
     auth('admin', 'employee'),

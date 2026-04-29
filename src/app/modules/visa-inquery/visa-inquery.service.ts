@@ -18,6 +18,14 @@ export class VisaInqueryService {
     static async findVisaInqueryById(_id: string | Types.ObjectId) {
         const data = await VisaInquery.findById(_id)
             .populate('visa_type', 'name')
+            .populate({
+                path: 'visa',
+                select: 'title visa_code overview price entry_type visa_category documents feathers faqs banner_image card_image images visa_type',
+                populate: {
+                    path: 'visa_type',
+                    select: 'name',
+                },
+            })
             .select('-updatedAt -__v ');
         if (!data) {
             throw new AppError(
@@ -45,10 +53,9 @@ export class VisaInqueryService {
     }
     static async findVisaInqueryWithPagination(
         filter: Record<string, string | boolean | number>,
-        query: Record<string, string | boolean | number |any>,
+        query: Record<string, string | boolean | number | any>,
         select: Record<string, string | boolean | number>,
     ) {
-        console.log(query);
         const searchTerm = query.search?.toString() || '';
         const aggregate = VisaInquery.aggregate([
             {
@@ -75,17 +82,78 @@ export class VisaInqueryService {
                     preserveNullAndEmptyArrays: true,
                 },
             },
-            ...(query.search ? [
-                {
-                    $match: {
-                        $or: [
-                            { [`visa_type.name.${query.langCode || 'en'}`]: { $regex: searchTerm.toLowerCase(), $options: 'i' } },
-                            { [`email`]: { $regex: searchTerm, $options: 'i' } },
-                            { [`full_name`]: { $regex: searchTerm, $options: 'i' } }
-                        ]
-                    }
-                }
-            ] : []),
+            {
+                $lookup: {
+                    from: 'visas',
+                    let: { visaId: '$visa' },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: { $eq: ['$_id', '$$visaId'] },
+                            },
+                        },
+                        {
+                            $lookup: {
+                                from: 'visa_types',
+                                localField: 'visa_type',
+                                foreignField: '_id',
+                                as: 'visa_type',
+                            },
+                        },
+                        {
+                            $unwind: {
+                                path: '$visa_type',
+                                preserveNullAndEmptyArrays: true,
+                            },
+                        },
+                        {
+                            $project: {
+                                title: 1,
+                                visa_code: 1,
+                                overview: 1,
+                                price: 1,
+                                entry_type: 1,
+                                visa_category: 1,
+                                documents: 1,
+                                feathers: 1,
+                                faqs: 1,
+                                banner_image: 1,
+                                card_image: 1,
+                                images: 1,
+                                visa_type: 1,
+                            },
+                        },
+                    ],
+                    as: 'visa',
+                },
+            },
+            {
+                $unwind: {
+                    path: '$visa',
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            ...(query.search
+                ? [
+                    {
+                        $match: {
+                            $or: [
+                                {
+                                    [`visa_type.name.${query.langCode || 'en'}`]: {
+                                        $regex: searchTerm.toLowerCase(),
+                                        $options: 'i',
+                                    },
+                                },
+                                { visa_name: { $regex: searchTerm, $options: 'i' } },
+                                { email: { $regex: searchTerm, $options: 'i' } },
+                                { full_name: { $regex: searchTerm, $options: 'i' } },
+                                { given_name: { $regex: searchTerm, $options: 'i' } },
+                                { last_name: { $regex: searchTerm, $options: 'i' } },
+                            ],
+                        },
+                    },
+                ]
+                : []),
             {
                 $project: select,
             },

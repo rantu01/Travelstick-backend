@@ -341,9 +341,16 @@ export class PackageController {
         const { query }: any = req;
         const filter: any = {};
         if (query.search) {
+            const q = query.search.trim();
             filter[`$or`] = [
-                { name: { $regex: new RegExp(query.search.trim(), 'i') } },
-                { tour_type: { $regex: new RegExp(query.search.trim(), 'i') } },
+                { name: { $regex: new RegExp(q, 'i') } },
+                { tour_type: { $regex: new RegExp(q, 'i') } },
+                { 'destination.name.en': { $regex: new RegExp(q, 'i') } },
+                { 'destination.name': { $regex: new RegExp(q, 'i') } },
+                { 'destination.address': { $regex: new RegExp(q, 'i') } },
+                { start_location: { $regex: new RegExp(q, 'i') } },
+                { end_location: { $regex: new RegExp(q, 'i') } },
+                { section: { $regex: new RegExp(q, 'i') } },
             ];
         }
         if (query._id) {
